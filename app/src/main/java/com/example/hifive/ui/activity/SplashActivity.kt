@@ -37,7 +37,7 @@ class SplashActivity : BaseActivity<ActivitySplashBinding>(ActivitySplashBinding
         }
 
         Handler(Looper.getMainLooper()).postDelayed({
-            val nextIntent = Intent(this@SplashActivity, LoginActivity::class.java)
+            val nextIntent = Intent(this@SplashActivity, BiometricActivity::class.java)
             startActivity(nextIntent)
             finish()
         }, duration)

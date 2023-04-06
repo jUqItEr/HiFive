@@ -44,6 +44,7 @@ class SplashActivity : BaseActivity<ActivitySplashBinding>(ActivitySplashBinding
     }
 
     companion object {
+        private const val tag: String = "SplashActivity"
         private const val duration: Long = 1500
     }
 }

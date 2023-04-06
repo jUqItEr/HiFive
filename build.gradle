@@ -3,9 +3,12 @@ buildscript {
     // HiFive Module Version Control
     ext {
         activity_version = '1.7.0'
+        annotation_version = '1.6.0'
+        biometric_version = '1.1.0'
         fragment_version = '1.5.6'
         lifecycle_ext_version = '2.2.0'
         lifecycle_version = '2.6.1'
+        lottie_version = '6.0.0'
         navigation_version = '2.5.3'
         splash_version = '1.0.0'
     }

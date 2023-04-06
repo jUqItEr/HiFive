@@ -13,13 +13,15 @@ class LoginActivity : BaseActivity<ActivityLoginBinding>(ActivityLoginBinding::i
     }
 
     // Init components
-    private fun initComponents() {
-        with(binding) {
+    private fun initComponents() = with(binding) {
 
-        }
     }
 
     private fun initObservers() {
 
+    }
+
+    companion object {
+        private const val tag = "LoginActivity"
     }
 }

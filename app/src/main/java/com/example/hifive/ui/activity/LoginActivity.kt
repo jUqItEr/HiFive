@@ -26,6 +26,7 @@ class LoginActivity : BaseActivity<ActivityLoginBinding>(ActivityLoginBinding::i
 
         initComponents()
         initObservers()
+
         val username = binding.username
         val password = binding.password
         val login = binding.login
@@ -98,9 +99,9 @@ class LoginActivity : BaseActivity<ActivityLoginBinding>(ActivityLoginBinding::i
             }
         }
         //
-        binding.signin?.setOnClickListener {
-            //val intent: Intent = Intent(this, SignupActivity::class.java)
-            //startActivity(intent)
+        binding.signin.setOnClickListener {
+            val intent: Intent = Intent(this, SignupActivity::class.java) //error
+            startActivity(intent)
         }
         //
     }

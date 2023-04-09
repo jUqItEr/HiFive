@@ -1,4 +1,4 @@
-package com.example.hifive.ui.login
+package com.example.hifive.login
 
 /**
  * User details post authentication that is exposed to the UI

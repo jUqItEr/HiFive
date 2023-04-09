@@ -1,4 +1,4 @@
-package com.example.hifive.ui.login
+package com.example.hifive.login
 
 /**
  * Data validation state of the login form.

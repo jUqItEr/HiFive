@@ -1,12 +1,13 @@
-package com.example.hifive.ui.login
+package com.example.hifive.login
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import android.util.Patterns
-import com.example.hifive.R
 import com.example.hifive.data.LoginRepository
 import com.example.hifive.data.Result
+
+import com.example.hifive.R
 
 
 class LoginViewModel(private val loginRepository: LoginRepository) : ViewModel() {

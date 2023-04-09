@@ -1,4 +1,4 @@
-package com.example.hifive.ui.login
+package com.example.hifive.login
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider

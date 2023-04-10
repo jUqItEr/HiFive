@@ -2,12 +2,10 @@ package com.example.hifive.data
 
 import android.util.Log
 import android.widget.Toast
-import com.example.hifive.data.model.LoginRequest
-import com.example.hifive.data.model.LoginResponse
-import com.example.hifive.data.model.RegisterRequest
-import com.example.hifive.data.model.RegisterResponse
+import com.example.hifive.data.model.*
 import com.example.hifive.data.viewmodel.ApiService
 import com.example.hifive.ui.activity.LoginActivity
+import com.example.hifive.ui.activity.MonthlyListActivity
 import com.example.hifive.ui.activity.SignupActivity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -91,9 +89,28 @@ object RetrofitClient {
 
         return success
     }
-    fun reserveCredit() {}
-    // 월별사용내역 request
-    fun requestMonthData(month: Int){
+    fun reserveCredit() {
 
+    }
+    // 월별사용내역 request
+    fun requestMonthData(context: MonthlyListActivity, request: SpentListRequest){
+        CoroutineScope(Dispatchers.IO).launch{
+            try {
+                //val response = ApiService//수정
+                if(/*response.isSuccessful*/true){
+                    // response.body()
+                    // todo 값 받아오기
+
+                }
+            } catch (e: Exception){
+                val message = "통신 오류 발생"
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(context, e.message, Toast.LENGTH_SHORT).show()
+                }
+                e.message?.let { Log.d(message, it) }
+            }
+        }
+
+        //return
     }
 }

@@ -18,4 +18,6 @@ interface ApiService {
     suspend fun signUp(
         @Body request: RegisterRequest
     ): Response<RegisterResponse>
+
+
 }

@@ -16,10 +16,10 @@
         android:theme="@style/Theme.HiFive"
         tools:targetApi="31">
         <activity
-            android:name=".SignupActivity"
+            android:name=".ui.activity.SignupActivity"
             android:exported="false" />
         <activity
-            android:name=".MonthlyListActivity"
+            android:name=".ui.activity.MonthlyListActivity"
             android:exported="false" />
         <activity
             android:name=".ui.activity.BiometricActivity"

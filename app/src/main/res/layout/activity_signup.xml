@@ -9,6 +9,9 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="30dp"
+        android:layout_marginEnd="10dp"
         android:orientation="vertical"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -31,27 +34,52 @@
 
         </LinearLayout>
 
+        <EditText
+            android:id="@+id/name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:inputType="textPersonName"
+            android:text="Name" />
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
+
+            <EditText
+                android:id="@+id/birth"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="3"
+                android:ems="8"
+                android:inputType="numberDecimal" />
 
             <TextView
                 android:id="@+id/textView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="5"
-                android:text="TextView" />
+                android:text="-" />
 
-            <Button
-                android:id="@+id/reservation"
+            <EditText
+                android:id="@+id/privateID"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="카드등록" />
+                android:layout_weight="3"
+                android:ems="7"
+                android:inputType="numberPassword" />
+
         </LinearLayout>
 
+        <Button
+            android:id="@+id/reservation"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="3"
+            android:text="본인인증" />
+
         <EditText
-            android:id="@+id/editEmailAddress"
+            android:id="@+id/EmailAddress"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ems="10"
@@ -59,7 +87,7 @@
             tools:text="@string/prompt_email" />
 
         <EditText
-            android:id="@+id/editPassword"
+            android:id="@+id/Password"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ems="10"
@@ -67,7 +95,7 @@
             tools:text="@string/prompt_password" />
 
         <EditText
-            android:id="@+id/editPassword2"
+            android:id="@+id/Password2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ems="10"

@@ -18,8 +18,8 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
             finish()
         }
         button1.setOnClickListener{
-            //val intent: Intent = Intent(this, MonthlyListActivity::class.java)
-            //startActivity(intent)
+            val intent: Intent = Intent(this@MainActivity, MonthlyListActivity::class.java)
+            startActivity(intent)
         }
         button2.setOnClickListener{
 

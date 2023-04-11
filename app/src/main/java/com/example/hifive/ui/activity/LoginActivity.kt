@@ -111,6 +111,19 @@ class LoginActivity : BaseActivity<ActivityLoginBinding>(ActivityLoginBinding::i
         //
     }
 
+    private var backPressedTime: Long = 0
+    private val BACK_KEY_TIME_INTERVAL: Long = 2000 // 2초
+
+    override fun onBackPressed() {
+        if (backPressedTime + BACK_KEY_TIME_INTERVAL > System.currentTimeMillis()) {
+            super.onBackPressed()
+            finishAffinity() // 앱의 모든 엑티비티 종료
+        } else {
+            Toast.makeText(this, "뒤로 가기 버튼을 한 번 더 누르면 종료됩니다.", Toast.LENGTH_SHORT).show()
+        }
+        backPressedTime = System.currentTimeMillis()
+    }
+
     // Init components
     private fun initComponents() = with(binding) {
 

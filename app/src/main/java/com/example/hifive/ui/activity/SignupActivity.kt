@@ -7,6 +7,11 @@ import android.widget.Toast
 import com.example.hifive.data.RetrofitClient
 import com.example.hifive.data.model.RegisterRequest
 import com.example.hifive.databinding.ActivitySignupBinding
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.security.MessageDigest
 
 class SignupActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -28,11 +33,15 @@ class SignupActivity : AppCompatActivity() {
             val personID = "${binding.birth.text.toString()}-${binding.privateID.text.toString()}"
 
             if(isValid(email, pwd, pwd2, name, personID)) {
-                if (RetrofitClient.signUp(this, RegisterRequest(email, pwd, name, personID))) {
-                    Toast.makeText(this, "회원가입 성공", Toast.LENGTH_LONG).show()
-                    finish()
-                } else {
-                    Toast.makeText(this, "회원가입 실패", Toast.LENGTH_LONG).show()
+                CoroutineScope(Dispatchers.IO).launch {
+                    var message = "회원가입 실패"
+                    if (RetrofitClient.signUp(this@SignupActivity, RegisterRequest(email, encrypt(pwd), name, encrypt(personID)))) {
+                        message = "회원가입 성공"
+                        finish()
+                    }
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(this@SignupActivity, "${message}", Toast.LENGTH_LONG).show()
+                    }
                 }
             }
         }
@@ -50,5 +59,10 @@ class SignupActivity : AppCompatActivity() {
             Toast.makeText(this@SignupActivity, "빈칸을 작성해 주세요", Toast.LENGTH_SHORT).show()
         }
         return valid
+    }
+
+    fun encrypt(input: String): String {
+        val bytes = MessageDigest.getInstance("MD5").digest(input.toByteArray(Charsets.UTF_8))
+        return bytes.joinToString("") { "%02x".format(it) }
     }
 }

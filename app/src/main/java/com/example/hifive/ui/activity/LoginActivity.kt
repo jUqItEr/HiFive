@@ -93,9 +93,14 @@ class LoginActivity : BaseActivity<ActivityLoginBinding>(ActivityLoginBinding::i
             login.setOnClickListener {
                 loading.visibility = View.VISIBLE
                 loginViewModel.login(username.text.toString(), password.text.toString())
+                if(true) { // todo if 조건문 수정
+                    username.text = null
+                    password.text = null
+                    val intent: Intent = Intent(this@LoginActivity, MainActivity::class.java)
+                    startActivity(intent)
+                } else{
 
-                val intent: Intent = Intent(this@LoginActivity, MainActivity::class.java)
-                startActivity(intent)
+                }
             }
         }
         //

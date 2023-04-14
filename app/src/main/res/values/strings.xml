@@ -1,6 +1,9 @@
 <resources>
     <string name="app_name">HiFive</string>
     <string name="title_activity_login">LoginActivity</string>
+    <string name="login_id">ID</string>
+    <string name="login_password">Password</string>
+    <string name="login_sign_in">Sign in</string>
     <string name="prompt_email">Email</string>
     <string name="prompt_password">Password</string>
     <string name="action_sign_in">Sign in or register</string>

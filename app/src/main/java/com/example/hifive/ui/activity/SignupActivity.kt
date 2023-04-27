@@ -20,22 +20,30 @@ class SignupActivity : AppCompatActivity() {
         setContentView(binding.root)
         var intent: Intent
 
-        //card reservation
-        binding.reservation.setOnClickListener {
-            //intent= Intent(this, "")
+
+        binding.sendButton.setOnClickListener {
+            binding.sendButton.text = "재전송"
 
         }
+
+        // 본인인증
+        binding.verifyButton.setOnClickListener {
+            if(true) {
+                binding.signIn.isEnabled = true
+            }
+        }
+
         binding.signIn.setOnClickListener {
             val email = binding.EmailAddress.text.toString()
             val pwd = binding.Password.text.toString()
             val pwd2 = binding.Password2.text.toString()
             val name = binding.name.text.toString()
-            val personID = "${binding.birth.text.toString()}-${binding.privateID.text.toString()}"
+            val phone = "${binding.phone.text}"
 
-            if(isValid(email, pwd, pwd2, name, personID)) {
+            if(isValid(email, pwd, pwd2, name, phone)) {
                 CoroutineScope(Dispatchers.IO).launch {
                     var message = "회원가입 실패"
-                    if (RetrofitClient.signUp(this@SignupActivity, RegisterRequest(email, encrypt(pwd), name, encrypt(personID)))) {
+                    if (RetrofitClient.signUp(this@SignupActivity, RegisterRequest(email, encrypt(pwd), name, phone))) {
                         message = "회원가입 성공"
                         finish()
                     }
@@ -47,9 +55,9 @@ class SignupActivity : AppCompatActivity() {
         }
     }
 
-    fun isValid(email:String, pwd:String, pwd2:String, name:String, personID:String): Boolean{
+    fun isValid(email:String, pwd:String, pwd2:String, name:String, phone:String): Boolean{
         var valid: Boolean = false
-        if(email.isNotBlank() && pwd.isNotBlank() && name.isNotBlank() && personID.length==14){
+        if(email.isNotBlank() && pwd.isNotBlank() && name.isNotBlank() && phone.length>=10){
             if(pwd.equals(pwd2)){
                 valid = true
             } else{

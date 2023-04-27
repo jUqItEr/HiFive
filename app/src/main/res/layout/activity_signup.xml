@@ -42,37 +42,35 @@
             android:inputType="textPersonName"
             android:text="Name" />
 
+        <EditText
+            android:id="@+id/phone"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:inputType="numberDecimal" />
+
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
 
             <EditText
-                android:id="@+id/birth"
+                android:id="@+id/verifyNumber"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="3"
-                android:ems="8"
+                android:ems="10"
                 android:inputType="numberDecimal" />
 
-            <TextView
-                android:id="@+id/textView"
+            <Button
+                android:id="@+id/sendButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="5"
-                android:text="-" />
-
-            <EditText
-                android:id="@+id/privateID"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="3"
-                android:ems="7"
-                android:inputType="numberPassword" />
-
+                android:layout_weight="1"
+                android:text="인증번호 전송" />
         </LinearLayout>
 
         <Button
-            android:id="@+id/reservation"
+            android:id="@+id/verifyButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="3"
@@ -116,6 +114,7 @@
                 android:id="@+id/signIn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:enabled="false"
                 android:lines="1"
                 android:text="회원가입" />
         </LinearLayout>

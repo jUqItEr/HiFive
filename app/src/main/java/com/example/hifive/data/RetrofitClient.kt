@@ -7,10 +7,7 @@ import com.example.hifive.data.viewmodel.ApiService
 import com.example.hifive.ui.activity.LoginActivity
 import com.example.hifive.ui.activity.MonthlyListActivity
 import com.example.hifive.ui.activity.SignupActivity
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.security.MessageDigest
@@ -25,13 +22,13 @@ object RetrofitClient {
             .build()
 
     val ApiService = retrofit.create(ApiService::class.java)
+    /*
     fun login(context: LoginActivity, request: LoginRequest): LoginResponse? {
-        var loginResponse: LoginResponse? = null
-        CoroutineScope(Dispatchers.IO).launch {
+        var job = CoroutineScope(Dispatchers.IO).async {
             try {
                 val response = ApiService.login(request)
                 if (response.isSuccessful) {
-                    loginResponse = response.body()
+                    val loginResponse = response.body()
                     if (loginResponse?.success == true) {
                         // 로그인 성공 처리
                         //val token = loginResponse.token
@@ -48,6 +45,7 @@ object RetrofitClient {
                             Toast.makeText(context, "${message}", Toast.LENGTH_SHORT).show()
                         }
                     }
+                    return@async loginResponse
                     Log.d("success", "${loginResponse.toString()}")
                 } else {
                     // 로그인 실패 처리
@@ -65,8 +63,11 @@ object RetrofitClient {
                 e.message?.let { Log.d(message, it) }
             }
         }
-        return loginResponse
+        //val response = job.await()
+        return respone
     }
+    */
+
     suspend fun signUp(context: SignupActivity, request: RegisterRequest): Boolean {
         var success:Boolean = false
             try {
@@ -125,4 +126,47 @@ object RetrofitClient {
         //return
     }
 
+    fun requestAuth(context: SignupActivity, request: String) {
+        CoroutineScope(Dispatchers.IO).launch{
+            try{
+                val response = ApiService.auth(request)
+                if(response.body() == true){
+                    val message = "인증번호를 발송 했습니다"
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+                    }
+                }
+
+
+            } catch (e: Exception){
+                val message = "요청 실패"
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(context, e.message, Toast.LENGTH_SHORT).show()
+                }
+                e.message?.let { Log.d(message, it) }
+            }
+        }
+    }
+
+    fun requestVerify(context: SignupActivity, request: Int){
+        CoroutineScope(Dispatchers.IO).launch{
+            try{
+                val response = ApiService.auth_verify(request)
+                if(response.body() == true){
+                    val message = "인증 되었습니다."
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+                    }
+                }
+
+
+            } catch (e: Exception){
+                val message = "요청 실패"
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(context, e.message, Toast.LENGTH_SHORT).show()
+                }
+                e.message?.let { Log.d(message, it) }
+            }
+        }
+    }
 }

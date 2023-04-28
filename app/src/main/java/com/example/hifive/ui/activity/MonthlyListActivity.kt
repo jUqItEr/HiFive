@@ -2,6 +2,7 @@ package com.example.hifive.ui.activity
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.Gravity
 import android.widget.TableLayout
 import android.widget.TableRow
@@ -15,13 +16,14 @@ import java.util.*
 class MonthlyListActivity : AppCompatActivity() {
     val cal = Calendar.getInstance()
     var year = cal.get(Calendar.YEAR)
-    var month = cal.get(Calendar.MONTH)
+    var month = cal.get(Calendar.MONTH) + 1
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val binding = ActivityMonthlyListBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        Log.d("date", "${year} + ${month} + ${cal.get(Calendar.DATE)}")
         binding.month.text = year.toString()+"년 "+month+"월"
         loadTable()
 
@@ -41,7 +43,7 @@ class MonthlyListActivity : AppCompatActivity() {
         }
         binding.nextMoth.setOnClickListener {
             //text view editing
-            if(year!=cal.get(Calendar.YEAR) || month!=cal.get(Calendar.MONTH)) {
+            if(year!=cal.get(Calendar.YEAR) || month!=cal.get(Calendar.MONTH)+1) {
                 if (month == 12) {
                     month = 1
                     year++
@@ -72,51 +74,12 @@ class MonthlyListActivity : AppCompatActivity() {
         //todo add load data, input year, month
 
 
-// 테이블 헤더 추가
-        val headerRow = TableRow(this)
-        headerRow.layoutParams = TableRow.LayoutParams(
-            TableRow.LayoutParams.MATCH_PARENT,
-            TableRow.LayoutParams.WRAP_CONTENT
-        )
-
-        val headerText1 = TextView(this)
-        headerText1.text = "NO."
-        headerText1.setPadding(5, 5, 5, 5)
-        headerText1.gravity= Gravity.CENTER
-        headerRow.addView(headerText1)
-
-        val headerText2 = TextView(this)
-        headerText2.text = "일시"
-        headerText2.setPadding(5, 5, 5, 5)
-        headerText2.gravity= Gravity.CENTER
-        headerRow.addView(headerText2)
-
-        val headerText3 = TextView(this)
-        headerText3.text = "승차"
-        headerText3.setPadding(5, 5, 5, 5)
-        headerText3.gravity= Gravity.CENTER
-        headerRow.addView(headerText3)
-
-        val headerText4 = TextView(this)
-        headerText4.text = "하차"
-        headerText4.setPadding(5, 5, 5, 5)
-        headerText4.gravity= Gravity.CENTER
-        headerRow.addView(headerText4)
-
-        val headerText5 = TextView(this)
-        headerText5.text = "결제금액"
-        headerText5.setPadding(5, 5, 5, 5)
-        headerText5.gravity= Gravity.CENTER
-        headerRow.addView(headerText5)
-
-        tableLayout.addView(headerRow)
-
 // 테이블 내용 추가
         //todo for문 10을 받아온 데이터의 length로 변경
-        for (i in 1..10) {
+        for (i in 1..100) {
             val row = TableRow(this)
             row.layoutParams = TableRow.LayoutParams(
-                TableRow.LayoutParams.MATCH_PARENT,
+                TableRow.LayoutParams.WRAP_CONTENT,
                 TableRow.LayoutParams.WRAP_CONTENT
             )
 

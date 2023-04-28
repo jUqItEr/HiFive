@@ -19,5 +19,15 @@ interface ApiService {
         @Body request: RegisterRequest
     ): Response<RegisterResponse>
 
+    @POST("/auth")
+    suspend fun auth(
+        @Body request: String
+    ): Response<Boolean>
+
+    @POST("/auth/verify")
+    suspend fun auth_verify(
+        @Body request: Int
+    ): Response<Boolean>
+
 
 }

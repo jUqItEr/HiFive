@@ -7,6 +7,11 @@ import android.widget.Toast
 import com.example.hifive.data.RetrofitClient
 import com.example.hifive.data.model.RegisterRequest
 import com.example.hifive.databinding.ActivitySignupBinding
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.security.MessageDigest
 
 class SignupActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -15,32 +20,44 @@ class SignupActivity : AppCompatActivity() {
         setContentView(binding.root)
         var intent: Intent
 
-        //card reservation
-        binding.reservation.setOnClickListener {
-            //intent= Intent(this, "")
+
+        binding.sendButton.setOnClickListener {
+            binding.sendButton.text = "재전송"
 
         }
+
+        // 본인인증
+        binding.verifyButton.setOnClickListener {
+            if(true) {
+                binding.signIn.isEnabled = true
+            }
+        }
+
         binding.signIn.setOnClickListener {
             val email = binding.EmailAddress.text.toString()
             val pwd = binding.Password.text.toString()
             val pwd2 = binding.Password2.text.toString()
             val name = binding.name.text.toString()
-            val personID = "${binding.birth.text.toString()}-${binding.privateID.text.toString()}"
+            val phone = "${binding.phone.text}"
 
-            if(isValid(email, pwd, pwd2, name, personID)) {
-                if (RetrofitClient.signUp(this, RegisterRequest(email, pwd, name, personID))) {
-                    Toast.makeText(this, "회원가입 성공", Toast.LENGTH_LONG).show()
-                    finish()
-                } else {
-                    Toast.makeText(this, "회원가입 실패", Toast.LENGTH_LONG).show()
+            if(isValid(email, pwd, pwd2, name, phone)) {
+                CoroutineScope(Dispatchers.IO).launch {
+                    var message = "회원가입 실패"
+                    if (RetrofitClient.signUp(this@SignupActivity, RegisterRequest(email, encrypt(pwd), name, phone))) {
+                        message = "회원가입 성공"
+                        finish()
+                    }
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(this@SignupActivity, "${message}", Toast.LENGTH_LONG).show()
+                    }
                 }
             }
         }
     }
 
-    fun isValid(email:String, pwd:String, pwd2:String, name:String, personID:String): Boolean{
+    fun isValid(email:String, pwd:String, pwd2:String, name:String, phone:String): Boolean{
         var valid: Boolean = false
-        if(email.isNotBlank() && pwd.isNotBlank() && name.isNotBlank() && personID.length==14){
+        if(email.isNotBlank() && pwd.isNotBlank() && name.isNotBlank() && phone.length>=10){
             if(pwd.equals(pwd2)){
                 valid = true
             } else{
@@ -50,5 +67,10 @@ class SignupActivity : AppCompatActivity() {
             Toast.makeText(this@SignupActivity, "빈칸을 작성해 주세요", Toast.LENGTH_SHORT).show()
         }
         return valid
+    }
+
+    fun encrypt(input: String): String {
+        val bytes = MessageDigest.getInstance("MD5").digest(input.toByteArray(Charsets.UTF_8))
+        return bytes.joinToString("") { "%02x".format(it) }
     }
 }

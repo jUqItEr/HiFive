@@ -7,12 +7,11 @@ import com.example.hifive.data.viewmodel.ApiService
 import com.example.hifive.ui.activity.LoginActivity
 import com.example.hifive.ui.activity.MonthlyListActivity
 import com.example.hifive.ui.activity.SignupActivity
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.security.MessageDigest
+import kotlin.text.Charsets.UTF_8
 
 object RetrofitClient {
     private val url = "http://hxlab.co.kr:30000"
@@ -23,14 +22,14 @@ object RetrofitClient {
             .build()
 
     val ApiService = retrofit.create(ApiService::class.java)
+    /*
     fun login(context: LoginActivity, request: LoginRequest): LoginResponse? {
-        var loginResponse: LoginResponse? = null
-        CoroutineScope(Dispatchers.IO).launch {
+        var job = CoroutineScope(Dispatchers.IO).async {
             try {
                 val response = ApiService.login(request)
                 if (response.isSuccessful) {
-                    loginResponse = response.body()
-                    if (loginResponse?.message == true) {
+                    val loginResponse = response.body()
+                    if (loginResponse?.success == true) {
                         // 로그인 성공 처리
                         //val token = loginResponse.token
                         //val message = loginResponse.token.toString()
@@ -41,11 +40,12 @@ object RetrofitClient {
                         // 토큰 저장 등의 작업 수행
                     } else {
                         // 로그인 실패 처리
-                        val message = loginResponse?.message ?: "로그인 실패"
+                        val message = loginResponse?.success ?: "로그인 실패"
                         withContext(Dispatchers.Main) {
                             Toast.makeText(context, "${message}", Toast.LENGTH_SHORT).show()
                         }
                     }
+                    return@async loginResponse
                     Log.d("success", "${loginResponse.toString()}")
                 } else {
                     // 로그인 실패 처리
@@ -63,21 +63,34 @@ object RetrofitClient {
                 e.message?.let { Log.d(message, it) }
             }
         }
-        return loginResponse
+        //val response = job.await()
+        return respone
     }
-    fun signUp(context: SignupActivity, request: RegisterRequest): Boolean {
+    */
+
+    suspend fun signUp(context: SignupActivity, request: RegisterRequest): Boolean {
         var success:Boolean = false
-        CoroutineScope(Dispatchers.IO).launch {
             try {
                 val response = ApiService.signUp(request)
+                //Log.d("회원가입 상태", response.toString())
                 if(response.isSuccessful) {
+                    Log.d("1", "response successful")
                     val registerResponse = response.body()
-                    if(registerResponse?.success == true)
+                    if(registerResponse?.success == true) {
+                        Log.d("2", "response success true")
                         success = true
-                    success = true
+                        Log.d("2-2", "${success}")
+                    }
+                    else {
+                        withContext(Dispatchers.Main) {
+                            Toast.makeText(context, "${registerResponse?.message}", Toast.LENGTH_SHORT).show()
+                        }
+                        Log.d("3", "response success false")
+                    }
                 } else{
-
+                    Log.d("4", "response fail")
                 }
+
             } catch (e: Exception){
                 val message = "통신 오류 발생"
                 withContext(Dispatchers.Main) {
@@ -85,8 +98,7 @@ object RetrofitClient {
                 }
                 e.message?.let { Log.d(message, it) }
             }
-        }
-
+        Log.d("5", "${success}")
         return success
     }
     fun reserveCredit() {
@@ -112,5 +124,49 @@ object RetrofitClient {
         }
 
         //return
+    }
+
+    fun requestAuth(context: SignupActivity, request: String) {
+        CoroutineScope(Dispatchers.IO).launch{
+            try{
+                val response = ApiService.auth(request)
+                if(response.body() == true){
+                    val message = "인증번호를 발송 했습니다"
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+                    }
+                }
+
+
+            } catch (e: Exception){
+                val message = "요청 실패"
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(context, e.message, Toast.LENGTH_SHORT).show()
+                }
+                e.message?.let { Log.d(message, it) }
+            }
+        }
+    }
+
+    fun requestVerify(context: SignupActivity, request: Int){
+        CoroutineScope(Dispatchers.IO).launch{
+            try{
+                val response = ApiService.auth_verify(request)
+                if(response.body() == true){
+                    val message = "인증 되었습니다."
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+                    }
+                }
+
+
+            } catch (e: Exception){
+                val message = "요청 실패"
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(context, e.message, Toast.LENGTH_SHORT).show()
+                }
+                e.message?.let { Log.d(message, it) }
+            }
+        }
     }
 }

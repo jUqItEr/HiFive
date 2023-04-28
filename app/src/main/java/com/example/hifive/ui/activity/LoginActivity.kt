@@ -93,9 +93,16 @@ class LoginActivity : BaseActivity<ActivityLoginBinding>(ActivityLoginBinding::i
             login.setOnClickListener {
                 loading.visibility = View.VISIBLE
                 loginViewModel.login(username.text.toString(), password.text.toString())
+                if(true) { // todo if 조건문 수정
+                    // input clear
+                    username.text = null
+                    password.text = null
 
-                val intent: Intent = Intent(this@LoginActivity, MainActivity::class.java)
-                startActivity(intent)
+                    val intent: Intent = Intent(this@LoginActivity, MainActivity::class.java)
+                    startActivity(intent)
+                } else{
+
+                }
             }
         }
         //
@@ -103,7 +110,25 @@ class LoginActivity : BaseActivity<ActivityLoginBinding>(ActivityLoginBinding::i
             val intent: Intent = Intent(this, SignupActivity::class.java) //error
             startActivity(intent)
         }
+
+        binding.findButton.setOnClickListener {
+            val intent: Intent = Intent(this, findIDPWActivity::class.java) //error
+            startActivity(intent)
+        }
         //
+    }
+
+    private var backPressedTime: Long = 0
+    private val BACK_KEY_TIME_INTERVAL: Long = 2000 // 2초
+
+    override fun onBackPressed() {
+        if (backPressedTime + BACK_KEY_TIME_INTERVAL > System.currentTimeMillis()) {
+            super.onBackPressed()
+            finishAffinity() // 앱의 모든 엑티비티 종료
+        } else {
+            Toast.makeText(this, "뒤로 가기 버튼을 한 번 더 누르면 종료됩니다.", Toast.LENGTH_SHORT).show()
+        }
+        backPressedTime = System.currentTimeMillis()
     }
 
     // Init components

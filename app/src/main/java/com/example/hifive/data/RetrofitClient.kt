@@ -1,13 +1,16 @@
 package com.example.hifive.data
 
+import android.app.Activity
 import android.util.Log
 import android.widget.Toast
+import com.example.hifive.R
 import com.example.hifive.data.model.*
 import com.example.hifive.data.viewmodel.ApiService
 import com.example.hifive.ui.activity.LoginActivity
 import com.example.hifive.ui.activity.MonthlyListActivity
 import com.example.hifive.ui.activity.SignupActivity
 import kotlinx.coroutines.*
+import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.security.MessageDigest
@@ -68,6 +71,7 @@ object RetrofitClient {
     }
     */
 
+    //회원가입 기능
     suspend fun signUp(context: SignupActivity, request: RegisterRequest): Boolean {
         var success:Boolean = false
             try {
@@ -101,6 +105,7 @@ object RetrofitClient {
         Log.d("5", "${success}")
         return success
     }
+
     fun reserveCredit() {
 
     }
@@ -126,12 +131,65 @@ object RetrofitClient {
         //return
     }
 
-    fun requestAuth(context: SignupActivity, request: String) {
+    fun requestAuth(context: Activity, phone: String, name: String) {
         CoroutineScope(Dispatchers.IO).launch{
             try{
-                val response = ApiService.auth(request)
+                val response = ApiService.auth(name, phone)
                 if(response.body() == true){
                     val message = "인증번호를 발송 했습니다"
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+                    }
+                } else{
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(context, "요청 실패", Toast.LENGTH_SHORT).show()
+                    }
+                }
+
+            } catch (e: Exception){
+                val message = "요청 실패"
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(context, e.message, Toast.LENGTH_SHORT).show()
+                }
+                e.message?.let { Log.d(message, it) }
+            }
+        }
+    }
+    fun requestPwAuth(context: Activity, id: String, name: String, phone: String) {
+        CoroutineScope(Dispatchers.IO).launch{
+            try{
+                val response = ApiService.pwAuth(id, name, phone)
+                if(response.isSuccessful){
+                    val message = "인증번호를 발송 했습니다"
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+                    }
+                } else{
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(context, "요청 실패", Toast.LENGTH_SHORT).show()
+                    }
+                }
+
+            } catch (e: Exception){
+                val message = "요청 실패"
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(context, e.message, Toast.LENGTH_SHORT).show()
+                }
+                e.message?.let { Log.d(message, it) }
+            }
+        }
+    }
+    fun requestVerify(context: SignupActivity, phone: String, request: Int){
+        CoroutineScope(Dispatchers.IO).launch{
+            try{
+                val response = ApiService.auth_verify(phone, request)
+                if(response.isSuccessful){
+                    val message = "인증 되었습니다."
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+                    }
+                } else{
+                    val message = "확인코드가 일치하지 않습니다."
                     withContext(Dispatchers.Main) {
                         Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
                     }
@@ -148,18 +206,20 @@ object RetrofitClient {
         }
     }
 
-    fun requestVerify(context: SignupActivity, request: Int){
-        CoroutineScope(Dispatchers.IO).launch{
-            try{
-                val response = ApiService.auth_verify(request)
-                if(response.body() == true){
-                    val message = "인증 되었습니다."
+
+    //비밀번호 수정 기능
+    fun changePWD(context: Activity, id: String, pwd: String){
+        // 비밀번호 교체
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val response = ApiService.change_pwd(IDPWmodify(id, pwd))
+                if(response.isSuccessful) {
+                    val message = response.body()?.message
                     withContext(Dispatchers.Main) {
                         Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+                        context.finish()
                     }
                 }
-
-
             } catch (e: Exception){
                 val message = "요청 실패"
                 withContext(Dispatchers.Main) {

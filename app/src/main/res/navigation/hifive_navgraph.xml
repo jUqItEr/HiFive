@@ -28,4 +28,9 @@
         android:id="@+id/mainActivity"
         android:name="com.example.hifive.ui.activity.MainActivity"
         android:label="MainActivity" />
+    <activity
+        android:id="@+id/monthlyListActivity"
+        android:name="com.example.hifive.ui.activity.MonthlyListActivity"
+        android:label="activity_monthly_list"
+        tools:layout="@layout/activity_monthly_list" />
 </navigation>

@@ -59,13 +59,13 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:ems="10"
+                android:enabled="false"
                 android:inputType="numberDecimal" />
 
             <Button
                 android:id="@+id/sendButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
                 android:text="인증번호 전송" />
         </LinearLayout>
 
@@ -74,6 +74,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="3"
+            android:enabled="false"
             android:text="본인인증" />
 
         <EditText
@@ -81,6 +82,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ems="10"
+            android:enabled="false"
             android:inputType="textEmailAddress"
             tools:text="@string/prompt_email" />
 
@@ -89,6 +91,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ems="10"
+            android:enabled="false"
             android:inputType="textPassword"
             tools:text="@string/prompt_password" />
 
@@ -97,6 +100,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ems="10"
+            android:enabled="false"
             android:inputType="textPassword"
             tools:text="@string/prompt_password" />
 

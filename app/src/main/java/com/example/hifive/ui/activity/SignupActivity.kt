@@ -22,14 +22,26 @@ class SignupActivity : AppCompatActivity() {
 
 
         binding.sendButton.setOnClickListener {
+            //인증번호 전송 action
+            //todo - 서버 테스트
             binding.sendButton.text = "재전송"
+            binding.verifyButton.isEnabled = true
+            binding.verifyNumber.isEnabled = true
 
+            val name = binding.name.text.toString()
+            val phone = binding.phone.text.toString()
+
+            RetrofitClient.requestAuth(this@SignupActivity, name, phone)
         }
 
         // 본인인증
         binding.verifyButton.setOnClickListener {
+            //인증번호 검증 action
             if(true) {
                 binding.signIn.isEnabled = true
+                binding.EmailAddress.isEnabled = true
+                binding.Password.isEnabled = true
+                binding.Password2.isEnabled = true
             }
         }
 

@@ -20,7 +20,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:orientation="horizontal">
 
             <RadioGroup
                 android:layout_width="match_parent"
@@ -39,19 +39,11 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="PW찾기" />
+                    android:text="PW수정" />
 
             </RadioGroup>
 
         </LinearLayout>
-
-        <EditText
-            android:id="@+id/findName"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:ems="10"
-            android:inputType="textPersonName"
-            android:text="Name" />
 
         <EditText
             android:id="@+id/findEmailAddress"
@@ -60,6 +52,14 @@
             android:ems="10"
             android:inputType="textEmailAddress"
             android:visibility="invisible" />
+
+        <EditText
+            android:id="@+id/findName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:inputType="textPersonName"
+            android:text="Name" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -91,13 +91,45 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:ems="10"
+                android:enabled="false"
                 android:inputType="numberDecimal" />
 
             <Button
                 android:id="@+id/findVerifyButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:enabled="false"
                 android:text="확인" />
+        </LinearLayout>
+
+        <EditText
+            android:id="@+id/modiPW"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:inputType="textPassword"
+            android:visibility="invisible" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <EditText
+                android:id="@+id/modiPW2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:inputType="textPassword"
+                android:visibility="invisible" />
+
+            <Button
+                android:id="@+id/modiButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="수정"
+                android:visibility="invisible" />
         </LinearLayout>
 
     </LinearLayout>

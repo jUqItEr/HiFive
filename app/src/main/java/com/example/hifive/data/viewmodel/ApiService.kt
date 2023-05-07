@@ -2,10 +2,7 @@ package com.example.hifive.data.viewmodel
 
 import com.example.hifive.data.model.*
 import retrofit2.Response
-import retrofit2.http.Body
-import retrofit2.http.Field
-import retrofit2.http.POST
-import retrofit2.http.PUT
+import retrofit2.http.*
 
 interface ApiService {
     @POST("/users/login")
@@ -39,6 +36,27 @@ interface ApiService {
 
     @PUT("/users/change-pwd")
     suspend fun change_pwd(
-        @Body request: IDPWmodify
+        @Body request: IDPWdata
     ): Response<CommonResponse>
+
+    @HTTP(method = "DELETE", path = "/users/delete", hasBody = true)
+    suspend fun delete_user(
+        @Body request: IDPWdata
+    ): Response<CommonResponse>
+
+
+    @GET("/users/pay-list")
+    suspend fun getPayList(
+        @Query("id") id: String,
+        @Query("year") year: String,
+        @Query("month") month: String
+    ): Response<PayListResponse>
+
+
+/*
+    @HTTP(method = "GET", path = "/users/pay-list", hasBody = true)
+    suspend fun getPayList(
+       @Body request: SpentListRequest
+    ): Response<PayListResponse>
+*/
 }

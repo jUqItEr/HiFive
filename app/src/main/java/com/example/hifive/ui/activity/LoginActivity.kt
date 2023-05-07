@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.widget.EditText
@@ -13,6 +14,7 @@ import androidx.annotation.StringRes
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.example.hifive.R
+import com.example.hifive.data.Result
 import com.example.hifive.databinding.ActivityLoginBinding
 import com.example.hifive.login.LoggedInUserView
 import com.example.hifive.login.LoginViewModel
@@ -92,13 +94,21 @@ class LoginActivity : BaseActivity<ActivityLoginBinding>(ActivityLoginBinding::i
 
             login.setOnClickListener {
                 loading.visibility = View.VISIBLE
-                loginViewModel.login(username.text.toString(), password.text.toString())
-                if(true) { // todo if 조건문 수정
+                val result = loginViewModel.login(username.text.toString(), password.text.toString())
+
+
+                if(result is Result.Success) {
                     // input clear
                     username.text = null
                     password.text = null
 
+                    val bundle = Bundle().apply {
+                        putString("id", result.data.userId)
+                        putString("name", result.data.displayName)
+                    }
+
                     val intent: Intent = Intent(this@LoginActivity, MainActivity::class.java)
+                    intent.putExtra("user", bundle)
                     startActivity(intent)
                 } else{
 

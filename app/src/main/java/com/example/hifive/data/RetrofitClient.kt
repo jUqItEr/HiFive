@@ -3,18 +3,16 @@ package com.example.hifive.data
 import android.app.Activity
 import android.util.Log
 import android.widget.Toast
-import com.example.hifive.R
 import com.example.hifive.data.model.*
 import com.example.hifive.data.viewmodel.ApiService
 import com.example.hifive.ui.activity.LoginActivity
 import com.example.hifive.ui.activity.MonthlyListActivity
 import com.example.hifive.ui.activity.SignupActivity
 import kotlinx.coroutines.*
-import retrofit2.Response
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.channels.consumeEach
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import java.security.MessageDigest
-import kotlin.text.Charsets.UTF_8
 
 object RetrofitClient {
     private val url = "http://hxlab.co.kr:30000"
@@ -25,52 +23,58 @@ object RetrofitClient {
             .build()
 
     val ApiService = retrofit.create(ApiService::class.java)
-    /*
-    fun login(context: LoginActivity, request: LoginRequest): LoginResponse? {
-        var job = CoroutineScope(Dispatchers.IO).async {
+
+    //login error
+    fun login(request: LoginRequest): LoginResponse? {
+        Log.d("login request","${request.pwd}")
+        val loginResponse = CoroutineScope(Dispatchers.IO).launch {
             try {
                 val response = ApiService.login(request)
+                Log.d("response", "${response.message()}"+"/"+"${response.isSuccessful}")
                 if (response.isSuccessful) {
+                    Log.d("response success", "${response.isSuccessful}")
                     val loginResponse = response.body()
+                    Log.d("response success", "${response.body()}")
                     if (loginResponse?.success == true) {
                         // 로그인 성공 처리
                         //val token = loginResponse.token
                         //val message = loginResponse.token.toString()
-
+                        Log.d("login response success", "${loginResponse.message}")
                         withContext(Dispatchers.Main) {
-                            Toast.makeText(context, loginResponse.toString(), Toast.LENGTH_SHORT).show()
+                            //Toast.makeText(LoginActivity(), loginResponse.toString(), Toast.LENGTH_SHORT).show()
+                            return@withContext loginResponse
                         }
                         // 토큰 저장 등의 작업 수행
                     } else {
                         // 로그인 실패 처리
                         val message = loginResponse?.success ?: "로그인 실패"
                         withContext(Dispatchers.Main) {
-                            Toast.makeText(context, "${message}", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(LoginActivity(), "${message}", Toast.LENGTH_SHORT).show()
+                            return@withContext loginResponse
                         }
                     }
-                    return@async loginResponse
-                    Log.d("success", "${loginResponse.toString()}")
+
                 } else {
                     // 로그인 실패 처리
                     val message = "로그인 실패"
                     withContext(Dispatchers.Main) {
-                        Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+                        Toast.makeText(LoginActivity(), message, Toast.LENGTH_LONG).show()
                     }
                 }
             } catch (e: Exception) {
                 // 예외 처리
                 val message = "로그인 중 오류 발생"
                 withContext(Dispatchers.Main) {
-                    Toast.makeText(context, e.message, Toast.LENGTH_SHORT).show()
+                    Log.e("${message}", "${e.message}")
+                    //Toast.makeText(context, e.message, Toast.LENGTH_SHORT).show()
                 }
-                e.message?.let { Log.d(message, it) }
             }
         }
-        //val response = job.await()
-        return respone
-    }
-    */
 
+        return null
+    }
+
+    //register error
     //회원가입 기능
     suspend fun signUp(context: SignupActivity, request: RegisterRequest): Boolean {
         var success:Boolean = false
@@ -110,25 +114,45 @@ object RetrofitClient {
 
     }
     // 월별사용내역 request
-    fun requestMonthData(context: MonthlyListActivity, request: SpentListRequest){
-        CoroutineScope(Dispatchers.IO).launch{
-            try {
-                //val response = ApiService//수정
-                if(/*response.isSuccessful*/true){
-                    // response.body()
-                    // todo 값 받아오기
-
-                }
-            } catch (e: Exception){
-                val message = "통신 오류 발생"
-                withContext(Dispatchers.Main) {
-                    Toast.makeText(context, e.message, Toast.LENGTH_SHORT).show()
-                }
-                e.message?.let { Log.d(message, it) }
+    suspend fun requestMonthData(request: SpentListRequest): PayListResponse?{
+        var payListResponse : PayListResponse? = null
+        try {
+            val response = ApiService.getPayList(request.id, request.year, request.month)
+            //val response = ApiService.getPayList(request)
+            if(response.isSuccessful){
+                payListResponse = response.body()
+                // todo 값 받아오기
+                Log.d("pay list", "${payListResponse.toString()}")
             }
+        } catch (e: Exception){
+            val message = "통신 오류 발생"
+            e.message?.let { Log.e(message, it) }
+        } finally {
+            return payListResponse
         }
+    }
 
-        //return
+    // 월별 총계 함수
+    suspend fun requestTotalPrice(request: SpentListRequest) :Int {
+        var total = 0
+        try{
+            val response = ApiService.getPayList(request.id, request.year, request.month)
+            //val response = ApiService.getPayList(request)
+            if(response.isSuccessful) {
+                val payListResponse = response.body()
+                if (payListResponse != null) {
+                    total = payListResponse.total
+                } else{
+                    Log.e("payList NULL", "${payListResponse}")
+                }
+            } else{
+                Log.e("response error", "${response}")
+            }
+        } catch (e: Exception){
+            e.message?.let { Log.e("통신 오류 발생", it) }
+        } finally {
+            return total
+        }
     }
 
     fun requestAuth(context: Activity, phone: String, name: String) {
@@ -212,7 +236,29 @@ object RetrofitClient {
         // 비밀번호 교체
         CoroutineScope(Dispatchers.IO).launch {
             try {
-                val response = ApiService.change_pwd(IDPWmodify(id, pwd))
+                val response = ApiService.change_pwd(IDPWdata(id, pwd))
+                if(response.isSuccessful) {
+                    val message = response.body()?.message
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+                        context.finish()
+                    }
+                }
+            } catch (e: Exception){
+                val message = "요청 실패"
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(context, e.message, Toast.LENGTH_SHORT).show()
+                }
+                e.message?.let { Log.d(message, it) }
+            }
+        }
+    }
+
+    // 회원탈퇴
+    fun deleteUser(context: Activity, id: String, pwd: String){
+        CoroutineScope(Dispatchers.IO).launch {
+            try{
+                val response = ApiService.delete_user(IDPWdata(id, pwd))
                 if(response.isSuccessful) {
                     val message = response.body()?.message
                     withContext(Dispatchers.Main) {

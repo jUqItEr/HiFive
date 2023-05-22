@@ -42,7 +42,7 @@ interface ApiService {
     suspend fun find_id(
         @Query("name") name:String,
         @Query("email") email:String,
-        @Query("certification") certification:String
+        @Query("certification") certification:Boolean
     ):Response<FindIdResponse>
 
     // 비밀번호 수정
@@ -54,7 +54,7 @@ interface ApiService {
     // 화윈 삭제
     @HTTP(method = "DELETE", path = "/users/delete", hasBody = true)
     suspend fun delete_user(
-        @Body request: IDPWdata
+        @Body request: DeletUserData
     ): Response<CommonResponse>
 
     // 결제 내역 리스트 호출

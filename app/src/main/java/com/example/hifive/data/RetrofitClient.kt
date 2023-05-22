@@ -8,7 +8,6 @@ import com.example.hifive.data.model.*
 import com.example.hifive.data.viewmodel.ApiService
 import com.example.hifive.ui.activity.LoginActivity
 import com.example.hifive.ui.activity.SignupActivity
-import com.example.hifive.ui.activity.findIDPWActivity
 import kotlinx.coroutines.*
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -237,16 +236,23 @@ object RetrofitClient {
     }
 
     //비밀번호 수정 기능
-    fun changePWD(context: Activity, id: String, pwd: String){
+    fun changePWD(context: Activity, id: String, pwd: String, certification: Boolean){
         // 비밀번호 교체
         CoroutineScope(Dispatchers.IO).launch {
             try {
-                val response = ApiService.change_pwd(IDPWdata(id, pwd))
+                val response = ApiService.change_pwd(IDPWdata(id, pwd,certification))
                 if(response.isSuccessful) {
                     val message = response.body()?.message
-                    withContext(Dispatchers.Main) {
-                        Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
-                        context.finish()
+                    val success=response.body()?.success
+                    if(success==true) {
+                        withContext(Dispatchers.Main) {
+                            Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+                            context.finish()
+                        }
+                    }else if(success==false){
+                        withContext(Dispatchers.Main) {
+                            Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+                        }
                     }
                 }
             } catch (e: Exception){
@@ -263,7 +269,7 @@ object RetrofitClient {
     fun deleteUser(context: Activity, id: String, pwd: String){
         CoroutineScope(Dispatchers.IO).launch {
             try{
-                val response = ApiService.delete_user(IDPWdata(id, pwd))
+                val response = ApiService.delete_user(DeletUserData(id, pwd))
                 if(response.isSuccessful) {
                     val message = response.body()?.message
                     withContext(Dispatchers.Main) {

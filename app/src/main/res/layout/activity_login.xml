@@ -50,7 +50,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="96dp"
-                        android:hint="@string/prompt_email"
+                        android:hint="ID"
                         android:inputType="textEmailAddress"
                         android:lines="1"
                         android:selectAllOnFocus="true" />

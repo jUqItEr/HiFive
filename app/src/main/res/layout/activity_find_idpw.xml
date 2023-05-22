@@ -39,19 +39,19 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="PW수정" />
+                    android:text="PW찾기" />
 
             </RadioGroup>
 
         </LinearLayout>
 
-        <EditText
-            android:id="@+id/findEmailAddress"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:ems="10"
-            android:inputType="textEmailAddress"
-            android:visibility="invisible" />
+<!--        <EditText-->
+<!--            android:id="@+id/findEmailAddress"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:ems="10"-->
+<!--            android:inputType="textEmailAddress"-->
+<!--            android:visibility="invisible" />-->
 
         <EditText
             android:id="@+id/findName"
@@ -59,7 +59,14 @@
             android:layout_height="wrap_content"
             android:ems="10"
             android:inputType="textPersonName"
-            android:text="Name" />
+            android:hint="이름" />
+        <EditText
+            android:id="@+id/findId"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:inputType="textPersonName"
+            android:hint="아이디" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -67,11 +74,12 @@
             android:orientation="horizontal">
 
             <EditText
-                android:id="@+id/findPhone"
+                android:id="@+id/findEmailAddress"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:ems="10"
-                android:inputType="phone" />
+                android:inputType="textEmailAddress"
+                android:hint="이메일"/>
 
             <Button
                 android:id="@+id/findSendButton"
@@ -92,7 +100,8 @@
                 android:layout_height="wrap_content"
                 android:ems="10"
                 android:enabled="false"
-                android:inputType="numberDecimal" />
+                android:inputType="numberDecimal"
+                android:text="인증번호"/>
 
             <Button
                 android:id="@+id/findVerifyButton"
@@ -131,6 +140,11 @@
                 android:text="수정"
                 android:visibility="invisible" />
         </LinearLayout>
+
+        <TextView
+            android:id="@+id/idvalue"
+            android:layout_width="match_parent"
+            android:layout_height="40dp" />
 
     </LinearLayout>
 

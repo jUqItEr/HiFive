@@ -39,15 +39,41 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ems="10"
-            android:inputType="textPersonName"
-            android:text="Name" />
+            android:hint="이름"
+            android:inputType="textPersonName" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+
+            <EditText
+                android:id="@+id/birth"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="5"
+                android:ems="10"
+                android:enabled="false"
+                android:hint="생년월일"
+                android:inputType="textPersonName" />
+
+            <ImageButton
+                android:id="@+id/inputDateButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                app:srcCompat="@android:drawable/ic_menu_my_calendar" />
+
+        </LinearLayout>
 
         <EditText
-            android:id="@+id/phone"
+            android:id="@+id/EmailAddress"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ems="10"
-            android:inputType="numberDecimal" />
+            android:hint="이메일"
+            android:inputType="textEmailAddress"
+            tools:text="@string/prompt_email" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -60,6 +86,7 @@
                 android:layout_height="wrap_content"
                 android:ems="10"
                 android:enabled="false"
+                android:hint="인증번호"
                 android:inputType="numberDecimal" />
 
             <Button
@@ -78,13 +105,14 @@
             android:text="본인인증" />
 
         <EditText
-            android:id="@+id/EmailAddress"
+            android:id="@+id/id"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ems="10"
             android:enabled="false"
+            android:hint="ID"
             android:inputType="textEmailAddress"
-            tools:text="@string/prompt_email" />
+            android:visibility="invisible" />
 
         <EditText
             android:id="@+id/Password"
@@ -92,7 +120,9 @@
             android:layout_height="wrap_content"
             android:ems="10"
             android:enabled="false"
+            android:hint="비밀번호"
             android:inputType="textPassword"
+            android:visibility="invisible"
             tools:text="@string/prompt_password" />
 
         <EditText
@@ -101,7 +131,9 @@
             android:layout_height="wrap_content"
             android:ems="10"
             android:enabled="false"
+            android:hint="비밀번호 확인"
             android:inputType="textPassword"
+            android:visibility="invisible"
             tools:text="@string/prompt_password" />
 
         <LinearLayout
@@ -120,7 +152,8 @@
                 android:layout_height="wrap_content"
                 android:enabled="false"
                 android:lines="1"
-                android:text="회원가입" />
+                android:text="회원가입"
+                android:visibility="invisible" />
         </LinearLayout>
 
     </LinearLayout>

@@ -45,9 +45,10 @@
                 android:layout_height="150dp"
                 android:layout_marginStart="50dp"
                 android:layout_marginEnd="50dp"
+                android:background="@drawable/round"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:srcCompat="?android:attr/fastScrollPreviewBackgroundRight" />
+            />
 
             <TextView
                 android:id="@+id/mothlyInfo"
@@ -86,7 +87,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="button" />
+                android:text="카드등록" />
         </LinearLayout>
 
         <Button

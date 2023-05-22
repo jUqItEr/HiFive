@@ -1,6 +1,5 @@
 package com.example.hifive.ui.activity
 
-import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
@@ -13,13 +12,17 @@ import android.widget.Toast
 import androidx.annotation.StringRes
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import com.example.hifive.R
 import com.example.hifive.data.Result
+import com.example.hifive.data.RetrofitClient
 import com.example.hifive.databinding.ActivityLoginBinding
 import com.example.hifive.login.LoggedInUserView
 import com.example.hifive.login.LoginViewModel
 import com.example.hifive.login.LoginViewModelFactory
 import com.example.hifive.ui.base.BaseActivity
+import kotlinx.coroutines.launch
+import java.security.MessageDigest
 
 class LoginActivity : BaseActivity<ActivityLoginBinding>(ActivityLoginBinding::inflate) {
     private lateinit var loginViewModel: LoginViewModel
@@ -83,35 +86,39 @@ class LoginActivity : BaseActivity<ActivityLoginBinding>(ActivityLoginBinding::i
 
             setOnEditorActionListener { _, actionId, _ ->
                 when (actionId) {
-                    EditorInfo.IME_ACTION_DONE ->
+                    EditorInfo.IME_ACTION_DONE -> lifecycleScope.launch {
                         loginViewModel.login(
                             username.text.toString(),
                             password.text.toString()
                         )
+                    }
                 }
                 false
             }
 
             login.setOnClickListener {
                 loading.visibility = View.VISIBLE
-                val result = loginViewModel.login(username.text.toString(), password.text.toString())
+                lifecycleScope.launch {
+                    val result =
+                        loginViewModel.login(username.text.toString(), password.text.toString())
 
 
-                if(result is Result.Success) {
-                    // input clear
-                    username.text = null
-                    password.text = null
+                    if (result is Result.Success) {
+                        // input clear
+                        username.text = null
+                        password.text = null
 
-                    val bundle = Bundle().apply {
-                        putString("id", result.data.userId)
-                        putString("name", result.data.displayName)
+                        val bundle = Bundle().apply {
+                            putString("id", result.data.userId)
+                            putString("name", result.data.displayName)
+                        }
+                        //조건 필요
+                        val intent: Intent = Intent(this@LoginActivity, MainActivity::class.java)
+                        intent.putExtra("user", bundle)
+                        startActivity(intent)
+                    } else {
+
                     }
-
-                    val intent: Intent = Intent(this@LoginActivity, MainActivity::class.java)
-                    intent.putExtra("user", bundle)
-                    startActivity(intent)
-                } else{
-
                 }
             }
         }
@@ -168,6 +175,8 @@ class LoginActivity : BaseActivity<ActivityLoginBinding>(ActivityLoginBinding::i
     private fun showLoginFailed(@StringRes errorString: Int) {
         Toast.makeText(applicationContext, errorString, Toast.LENGTH_SHORT).show()
     }
+
+
 }
 
 fun EditText.afterTextChanged(afterTextChanged: (String) -> Unit) {

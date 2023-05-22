@@ -136,13 +136,13 @@ class MonthlyListActivity : AppCompatActivity() {
 
                     // 하차
                     val text3 = TextView(this@MonthlyListActivity)
-                    text3.text = "${""}"
+                    text3.text = "${dataList[i].quit}"
                     text3.setPadding(5, 5, 5, 5)
                     row.addView(text3)
 
                     // 카드
                     val text4 = TextView(this@MonthlyListActivity)
-                    text4.text = "${dataList[i].card}"
+                    text4.text = "${dataList[i].card_name}"
                     text4.setPadding(5, 5, 5, 5)
                     row.addView(text4)
 

@@ -31,6 +31,8 @@
         <activity
             android:name=".ui.activity.LoginActivity"
             android:exported="false" />
+        <activity android:name=".ui.activity.CardRegistActivity"
+            android:exported="false" />
         <activity
             android:name=".ui.activity.SplashActivity"
             android:exported="true">

@@ -7,5 +7,4 @@ data class RegisterRequest(
     val name: String,
     val birth:String,
     val certification:Boolean
-
 )

@@ -19,7 +19,7 @@ class LoginDataSource {
             val response = RetrofitClient.login(LoginRequest(username, encrypt(password)))
             if(response !== null) {
                 if (response?.success==true) {
-                    val user = LoggedInUser("${username}", "${username}")
+                    val user = LoggedInUser("${username}", "${response.name}","${response.email}")
                     return Result.Success(user)
                 } else {
                     return Result.Error(Exception("로그인 오류"))

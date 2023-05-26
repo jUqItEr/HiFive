@@ -107,10 +107,12 @@ class LoginActivity : BaseActivity<ActivityLoginBinding>(ActivityLoginBinding::i
                         // input clear
                         username.text = null
                         password.text = null
+                        Log.d("result 값 테스트","$result")
 
                         val bundle = Bundle().apply {
                             putString("id", result.data.userId)
                             putString("name", result.data.displayName)
+                            putString("email",result.data.email)
                         }
                         //조건 필요
                         val intent: Intent = Intent(this@LoginActivity, MainActivity::class.java)

@@ -29,7 +29,6 @@ class MonthlyListActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         // bundle data 호출
         bundle = intent.extras?.getBundle("user")
-        Log.d("bundle data(monthly)", "${bundle?.getString("id")}")
 
         val binding = ActivityMonthlyListBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -80,8 +79,6 @@ class MonthlyListActivity : AppCompatActivity() {
     }
 
     fun loadTable(){
-
-
 //월별 데이터 값 가져오기
         //todo add load data, input year, month
         CoroutineScope(Dispatchers.IO).launch {
@@ -91,9 +88,13 @@ class MonthlyListActivity : AppCompatActivity() {
 
 // TableLayout 가져오기
             val tableLayout = findViewById<TableLayout>(R.id.table)
+            tableLayout.setStretchAllColumns(true) // Add this line
             if(tableLayout.isNotEmpty())
                 tableLayout.removeAllViews()
-
+//            for (i in 0 until tableLayout.childCount) {
+//                val row = tableLayout.getChildAt(i) as? TableRow
+//                row?.removeAllViews()
+//            }
             //total text 초기화
             launch(Dispatchers.Main) {
                 total.text = "${0}"
@@ -130,25 +131,25 @@ class MonthlyListActivity : AppCompatActivity() {
 
                     // 승차
                     val text2 = TextView(this@MonthlyListActivity)
-                    text2.text = "${dataList[i].date}"
+                    text2.text = "${dataList[i]?.date?:"N/A"}"
                     text2.setPadding(5, 5, 5, 5)
                     row.addView(text2)
 
                     // 하차
                     val text3 = TextView(this@MonthlyListActivity)
-                    text3.text = "${dataList[i].quit}"
+                    text3.text = "${dataList[i]?.quit?:"N/A"}"
                     text3.setPadding(5, 5, 5, 5)
                     row.addView(text3)
 
                     // 카드
                     val text4 = TextView(this@MonthlyListActivity)
-                    text4.text = "${dataList[i].card_name}"
+                    text4.text = "${dataList[i]?.card_name?:"N/A"}"
                     text4.setPadding(5, 5, 5, 5)
                     row.addView(text4)
 
                     // 결제금액
                     val text5 = TextView(this@MonthlyListActivity)
-                    text5.text = "${dataList[i].fee}원"
+                    text5.text = "${dataList[i]?.fee?:"0"}원"
                     text5.setPadding(5, 5, 5, 5)
                     row.addView(text5)
 

@@ -35,7 +35,6 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
         initComponents()
 
     }
-
     override fun onBackPressed() {
         if (backPressedTime + BACK_KEY_TIME_INTERVAL > System.currentTimeMillis()) {
             super.onBackPressed()
@@ -73,15 +72,22 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
         }
 
         // 월별 내역조회 버튼
-        button1.setOnClickListener{
+        binding.button1.setOnClickListener{
             val intent: Intent = Intent(this@MainActivity, MonthlyListActivity::class.java)
             intent.putExtra("user", bundle)
             startActivity(intent)
         }
 
         // 카드 정보, 등록 버튼
-        button2.setOnClickListener{
+//        button2.setOnClickListener{
+//
+//        }
 
+        //카드 등록
+        binding.button4.setOnClickListener{
+            val intent=Intent(this@MainActivity,CardRegistActivity::class.java)
+            intent.putExtra("user",bundle)
+            startActivity(intent)
         }
 
         //회원탈퇴

@@ -6,6 +6,7 @@ import android.util.Log
 import android.widget.Toast
 import com.example.hifive.data.model.*
 import com.example.hifive.data.viewmodel.ApiService
+import com.example.hifive.ui.activity.CardRegistActivity
 import com.example.hifive.ui.activity.LoginActivity
 import com.example.hifive.ui.activity.SignupActivity
 import kotlinx.coroutines.*
@@ -65,7 +66,6 @@ object RetrofitClient {
     }
 
 
-    //register error
     //회원가입 기능
     @SuppressLint("SuspiciousIndentation")
     suspend fun signUp(context: SignupActivity, request: RegisterRequest): Boolean {
@@ -74,19 +74,14 @@ object RetrofitClient {
                 val response = ApiService.signUp(request)
                 //Log.d("회원가입 상태", response.toString())
                 if(response.isSuccessful) {
-                    Log.d("1", "response successful")
                     val registerResponse = response.body()
-                    Log.d("반환값 확인","$registerResponse")
                     if(registerResponse?.success == true) {
-                        Log.d("2", "response success true")
                         success = true
-                        Log.d("2-2", "${success}")
                     }
                     else {
                         withContext(Dispatchers.Main) {
                             Toast.makeText(context, "${registerResponse?.message}", Toast.LENGTH_SHORT).show()
                         }
-                        Log.d("3", "response success false")
                     }
                 } else{
                     Log.d("4", "response fail")
@@ -104,6 +99,35 @@ object RetrofitClient {
     }
 
 
+    //카드 등록
+    suspend fun cardRetist(context:CardRegistActivity,request:CardRegistRequest):Boolean{
+        var success:Boolean=false
+        try {
+            val response = ApiService.card_regist(request)
+            if (response.isSuccessful) {
+                val cardRegistResponse = response.body()
+                Log.d("카드 등록 확인", "$cardRegistResponse")
+                if (cardRegistResponse?.success == true) {
+                    success=true
+                } else {
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(context, "${cardRegistResponse?.message}", Toast.LENGTH_SHORT)
+                            .show()
+                    }
+                }
+            }else{
+
+            }
+        }
+        catch (e:java.lang.Exception){
+            val message = "통신 오류 발생"
+            withContext(Dispatchers.Main) {
+                Toast.makeText(context, e.message, Toast.LENGTH_SHORT).show()
+            }
+            e.message?.let { Log.d(message, it) }
+        }
+        return success
+    }
 
     fun reserveCredit() {
 

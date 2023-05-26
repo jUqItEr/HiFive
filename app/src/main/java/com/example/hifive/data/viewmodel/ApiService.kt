@@ -57,6 +57,12 @@ interface ApiService {
         @Body request: DeletUserData
     ): Response<CommonResponse>
 
+    //카드 등록
+    @POST("/users/card-regist")
+    suspend fun card_regist(
+        @Body request: CardRegistRequest
+    ):Response<CommonResponse>
+
     // 결제 내역 리스트 호출
     @GET("/users/pay-list")
     suspend fun getPayList(

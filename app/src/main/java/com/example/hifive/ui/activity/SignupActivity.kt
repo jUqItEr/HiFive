@@ -25,7 +25,6 @@ class SignupActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         val binding = ActivitySignupBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        var intent: Intent
 
         // 날짜 입력 버튼
         binding.inputDateButton.setOnClickListener(){

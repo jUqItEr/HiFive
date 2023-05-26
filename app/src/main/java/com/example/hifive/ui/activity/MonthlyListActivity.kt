@@ -109,6 +109,14 @@ class MonthlyListActivity : AppCompatActivity() {
                 Log.d("load list","${paylistresponse != null} / ${paylistresponse.success == true} / ${paylistresponse.data.size}")
             }
 
+            //TextView 만드는 함수
+            fun createTextView(text: String): TextView {
+                val textView = TextView(this@MonthlyListActivity)
+                textView.text = text
+                textView.setPadding(5,5,5,5)
+                textView.gravity = Gravity.CENTER
+                return textView
+            }
             // 리스트 출력
             if (paylistresponse != null && paylistresponse.success == true && paylistresponse.data.size != 0){
                 launch(Dispatchers.Main) {
@@ -116,46 +124,69 @@ class MonthlyListActivity : AppCompatActivity() {
                 }
                 val dataList = paylistresponse.data
 
-                for (i in 0..dataList.size-1){
+                for (i in 0..dataList.size-1)  {
+                    if(i==0){
+                        val row0 = TableRow(this@MonthlyListActivity)
+                        row0.layoutParams = TableRow.LayoutParams(
+                            TableRow.LayoutParams.MATCH_PARENT,
+                            TableRow.LayoutParams.WRAP_CONTENT,
+                            1f
+                        )
+                        row0.addView(createTextView("NO."))
+                        row0.addView(createTextView("승차"))
+                        row0.addView(createTextView("하차"))
+                        row0.addView(createTextView("카드"))
+                        row0.addView(createTextView("결제금액"))
+
+                        launch(Dispatchers.Main) {
+                            tableLayout.addView(row0)
+                        }
+                    }
                     val row = TableRow(this@MonthlyListActivity)
                     row.layoutParams = TableRow.LayoutParams(
+                        TableRow.LayoutParams.MATCH_PARENT,
                         TableRow.LayoutParams.WRAP_CONTENT,
-                        TableRow.LayoutParams.WRAP_CONTENT
+                        1f
                     )
 
+
                     // 순번
-                    val text1 = TextView(this@MonthlyListActivity)
-                    text1.text = "${i+1}"
-                    text1.setPadding(5, 5, 5, 5)
-                    row.addView(text1)
+                    row.addView(createTextView("${i+1}"))
 
                     // 승차
-                    val text2 = TextView(this@MonthlyListActivity)
-                    text2.text = "${dataList[i]?.date?:"N/A"}"
-                    text2.setPadding(5, 5, 5, 5)
-                    row.addView(text2)
+                    val riding=dataList[i]?.date?.replace("T"," ")?.substring(5,19)
+                    row.addView(createTextView(riding.toString()))
 
                     // 하차
-                    val text3 = TextView(this@MonthlyListActivity)
-                    text3.text = "${dataList[i]?.quit?:"N/A"}"
-                    text3.setPadding(5, 5, 5, 5)
-                    row.addView(text3)
+                    val quit=dataList[i]?.quit?.replace("T"," ")?.substring(5,19)
+                    row.addView(createTextView(quit.toString()))
 
                     // 카드
-                    val text4 = TextView(this@MonthlyListActivity)
-                    text4.text = "${dataList[i]?.card_name?:"N/A"}"
-                    text4.setPadding(5, 5, 5, 5)
-                    row.addView(text4)
+                    row.addView(createTextView("${dataList[i]?.card_name?:"N/A"}"))
 
                     // 결제금액
-                    val text5 = TextView(this@MonthlyListActivity)
-                    text5.text = "${dataList[i]?.fee?:"0"}원"
-                    text5.setPadding(5, 5, 5, 5)
-                    row.addView(text5)
+                    row.addView(createTextView("${dataList[i]?.fee?:"0"}원"))
 
                     launch(Dispatchers.Main) {
                         tableLayout.addView(row)
                     }
+
+                }
+            }else{
+                val row0 = TableRow(this@MonthlyListActivity)
+                row0.layoutParams = TableRow.LayoutParams(
+                    TableRow.LayoutParams.MATCH_PARENT,
+                    TableRow.LayoutParams.WRAP_CONTENT,
+                    1f
+                )
+                row0.addView(createTextView("NO."))
+                row0.addView(createTextView("승차"))
+                row0.addView(createTextView("하차"))
+                row0.addView(createTextView("카드"))
+                row0.addView(createTextView("결제금액"))
+
+                launch(Dispatchers.Main) {
+                    tableLayout.addView(row0)
                 }
             }
         }

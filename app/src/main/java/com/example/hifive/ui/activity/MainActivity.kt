@@ -59,7 +59,8 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
             launch(Dispatchers.Main) {
                 if (bundle != null) {
                     mothlyInfo.text = bundle!!.getString("name")
-                        .toString() + "님\n" + "${year}년 ${month}월 사용내역\n" + "${money}원"
+                        .toString() + "님\n" + "${year}년 ${month}월 사용내역\n"
+                    moneyInfo.text="${money}원"
                 }
             }
         }
@@ -78,7 +79,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
             startActivity(intent)
         }
 
-        // 카드 정보, 등록 버튼
+        // 카드 정보
 //        button2.setOnClickListener{
 //
 //        }
@@ -132,12 +133,6 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
                 //RetrofitClient.deleteUser(this, id, encrypt(passwordEditText.text.toString()))
             }
             .show()
-    }
-
-    //password 암호화 함수
-    private fun encrypt(input: String): String {
-        val bytes = MessageDigest.getInstance("MD5").digest(input.toByteArray(Charsets.UTF_8))
-        return bytes.joinToString("") { "%02x".format(it) }
     }
 
     companion object {

@@ -20,7 +20,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:orientation="horizontal">
 
             <RadioGroup
                 android:layout_width="match_parent"
@@ -45,21 +45,28 @@
 
         </LinearLayout>
 
+<!--        <EditText-->
+<!--            android:id="@+id/findEmailAddress"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:ems="10"-->
+<!--            android:inputType="textEmailAddress"-->
+<!--            android:visibility="invisible" />-->
+
         <EditText
             android:id="@+id/findName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:ems="10"
             android:inputType="textPersonName"
-            android:text="Name" />
-
+            android:hint="이름" />
         <EditText
-            android:id="@+id/findEmailAddress"
+            android:id="@+id/findId"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:ems="10"
-            android:inputType="textEmailAddress"
-            android:visibility="invisible" />
+            android:inputType="textPersonName"
+            android:hint="아이디" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -67,11 +74,12 @@
             android:orientation="horizontal">
 
             <EditText
-                android:id="@+id/findPhone"
+                android:id="@+id/findEmailAddress"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:ems="10"
-                android:inputType="phone" />
+                android:inputType="textEmailAddress"
+                android:hint="이메일"/>
 
             <Button
                 android:id="@+id/findSendButton"
@@ -91,14 +99,53 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:ems="10"
-                android:inputType="numberDecimal" />
+                android:enabled="false"
+                android:inputType="numberDecimal"
+                android:hint="인증번호"/>
 
             <Button
                 android:id="@+id/findVerifyButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:enabled="false"
                 android:text="확인" />
         </LinearLayout>
+
+        <EditText
+            android:id="@+id/modiPW"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:inputType="textPassword"
+            android:visibility="invisible" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <EditText
+                android:id="@+id/modiPW2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:inputType="textPassword"
+                android:visibility="invisible" />
+
+            <Button
+                android:id="@+id/modiButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="수정"
+                android:visibility="invisible" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/idvalue"
+            android:layout_width="match_parent"
+            android:layout_height="68dp"
+            android:textSize="24sp" />
 
     </LinearLayout>
 

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/hifive_navgraph"
+    app:startDestination="@id/splashActivity">
+
+    <activity
+        android:id="@+id/splashActivity"
+        android:name="com.example.hifive.ui.activity.SplashActivity"
+        android:label="activity_splash"
+        tools:layout="@layout/activity_splash" />
+    <activity
+        android:id="@+id/loginActivity"
+        android:name="com.example.hifive.ui.activity.LoginActivity"
+        android:label="LoginActivity" />
+    <activity
+        android:id="@+id/signupActivity"
+        android:name="com.example.hifive.ui.activity.SignupActivity"
+        android:label="activity_signup"
+        tools:layout="@layout/activity_signup" />
+    <activity
+        android:id="@+id/findIDPWActivity"
+        android:name="com.example.hifive.ui.activity.findIDPWActivity"
+        android:label="activity_find_idpw"
+        tools:layout="@layout/activity_find_idpw" />
+    <activity
+        android:id="@+id/mainActivity"
+        android:name="com.example.hifive.ui.activity.MainActivity"
+        android:label="MainActivity" />
+    <activity
+        android:id="@+id/monthlyListActivity"
+        android:name="com.example.hifive.ui.activity.MonthlyListActivity"
+        android:label="activity_monthly_list"
+        tools:layout="@layout/activity_monthly_list" />
+</navigation>

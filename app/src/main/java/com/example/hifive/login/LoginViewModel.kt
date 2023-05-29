@@ -8,6 +8,7 @@ import com.example.hifive.data.LoginRepository
 import com.example.hifive.data.Result
 
 import com.example.hifive.R
+import com.example.hifive.data.model.LoggedInUser
 import com.example.hifive.ui.activity.MainActivity
 
 
@@ -19,14 +20,16 @@ class LoginViewModel(private val loginRepository: LoginRepository) : ViewModel()
     private val _loginResult = MutableLiveData<LoginResult>()
     val loginResult: LiveData<LoginResult> = _loginResult
 
-    fun login(username: String, password: String) {
+    suspend fun login(username: String, password: String) : Result<LoggedInUser> {
         // can be launched in a separate asynchronous job
         val result = loginRepository.login(username, password)
 
         if (result is Result.Success) {
             _loginResult.value = LoginResult(success = LoggedInUserView(displayName = result.data.displayName))
+            return result
         } else {
             _loginResult.value = LoginResult(error = R.string.login_failed)
+            return result
         }
     }
 
@@ -51,6 +54,6 @@ class LoginViewModel(private val loginRepository: LoginRepository) : ViewModel()
 
     // A placeholder password validation check
     private fun isPasswordValid(password: String): Boolean {
-        return password.length > 5
+        return password.length > 3
     }
 }

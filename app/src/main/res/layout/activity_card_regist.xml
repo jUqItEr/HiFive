@@ -5,7 +5,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.activity.SignupActivity">
+    tools:context=".ui.activity.CardRegistActivity" >
+
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -18,29 +19,12 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <TextView
-                android:id="@+id/SignUpText"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="회원가입"
-                android:textAlignment="center"
-                android:textSize="48sp"
-                android:textStyle="bold" />
-
-        </LinearLayout>
-
         <EditText
-            android:id="@+id/name"
+            android:id="@+id/userId"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ems="10"
-            android:hint="이름"
+            android:hint="아이디"
             android:inputType="textPersonName" />
 
         <LinearLayout
@@ -106,56 +90,63 @@
             android:text="본인인증" />
 
         <EditText
-            android:id="@+id/id"
+            android:id="@+id/cardNumber"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ems="10"
             android:enabled="false"
-            android:hint="ID"
-            android:inputType="textEmailAddress"
+            android:hint="카드번호 ( '-' 제외)"
+            android:inputType="textPassword"
             android:visibility="invisible" />
 
         <EditText
-            android:id="@+id/Password"
+            android:id="@+id/expiryValue"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ems="10"
             android:enabled="false"
-            android:hint="비밀번호"
+            android:hint="카드유효기간 ( ex)20230523 ) "
             android:inputType="textPassword"
             android:visibility="invisible"
             tools:text="@string/prompt_password" />
 
         <EditText
-            android:id="@+id/Password2"
+            android:id="@+id/pwd_2digitValue"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ems="10"
             android:enabled="false"
-            android:hint="비밀번호 확인"
+            android:hint="카드 비밀번호 앞 2자리"
             android:inputType="textPassword"
             android:visibility="invisible"
             tools:text="@string/prompt_password" />
+
+        <EditText
+            android:id="@+id/cardName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:enabled="false"
+            android:hint="카드 닉네임(이름)"
+            android:visibility="invisible"
+            />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="horizontal">
 
-            <Space
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1" />
-
             <Button
-                android:id="@+id/signIn"
+                android:id="@+id/cardRegistBtn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:enabled="false"
                 android:lines="1"
-                android:text="회원가입"
+                android:layout_weight="1"
+                android:text="카드등록"
                 android:visibility="invisible" />
         </LinearLayout>
+
 
     </LinearLayout>
 

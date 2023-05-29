@@ -1,0 +1,1650 @@
+Index: app/src/main/java/com/example/hifive/login/LoginViewModel.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.example.hifive.login\r\n\r\nimport androidx.lifecycle.LiveData\r\nimport androidx.lifecycle.MutableLiveData\r\nimport androidx.lifecycle.ViewModel\r\nimport android.util.Patterns\r\nimport com.example.hifive.data.LoginRepository\r\nimport com.example.hifive.data.Result\r\n\r\nimport com.example.hifive.R\r\nimport com.example.hifive.data.model.LoggedInUser\r\nimport com.example.hifive.ui.activity.MainActivity\r\n\r\n\r\nclass LoginViewModel(private val loginRepository: LoginRepository) : ViewModel() {\r\n\r\n    private val _loginForm = MutableLiveData<LoginFormState>()\r\n    val loginFormState: LiveData<LoginFormState> = _loginForm\r\n\r\n    private val _loginResult = MutableLiveData<LoginResult>()\r\n    val loginResult: LiveData<LoginResult> = _loginResult\r\n\r\n    fun login(username: String, password: String) : Result<LoggedInUser> {\r\n        // can be launched in a separate asynchronous job\r\n        val result = loginRepository.login(username, password)\r\n\r\n        if (result is Result.Success) {\r\n            _loginResult.value = LoginResult(success = LoggedInUserView(displayName = result.data.displayName))\r\n            return result\r\n        } else {\r\n            _loginResult.value = LoginResult(error = R.string.login_failed)\r\n            return result\r\n        }\r\n    }\r\n\r\n    fun loginDataChanged(username: String, password: String) {\r\n        if (!isUserNameValid(username)) {\r\n            _loginForm.value = LoginFormState(usernameError = R.string.invalid_username)\r\n        } else if (!isPasswordValid(password)) {\r\n            _loginForm.value = LoginFormState(passwordError = R.string.invalid_password)\r\n        } else {\r\n            _loginForm.value = LoginFormState(isDataValid = true)\r\n        }\r\n    }\r\n\r\n    // A placeholder username validation check\r\n    private fun isUserNameValid(username: String): Boolean {\r\n        return if (username.contains('@')) {\r\n            Patterns.EMAIL_ADDRESS.matcher(username).matches()\r\n        } else {\r\n            username.isNotBlank()\r\n        }\r\n    }\r\n\r\n    // A placeholder password validation check\r\n    private fun isPasswordValid(password: String): Boolean {\r\n        return password.length > 3\r\n    }\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/example/hifive/login/LoginViewModel.kt b/app/src/main/java/com/example/hifive/login/LoginViewModel.kt
+--- a/app/src/main/java/com/example/hifive/login/LoginViewModel.kt	(revision 3620ea1a694ce806681b46357d3f5330d3af9b8e)
++++ b/app/src/main/java/com/example/hifive/login/LoginViewModel.kt	(date 1684309447810)
+@@ -20,7 +20,7 @@
+     private val _loginResult = MutableLiveData<LoginResult>()
+     val loginResult: LiveData<LoginResult> = _loginResult
+ 
+-    fun login(username: String, password: String) : Result<LoggedInUser> {
++    suspend fun login(username: String, password: String) : Result<LoggedInUser> {
+         // can be launched in a separate asynchronous job
+         val result = loginRepository.login(username, password)
+ 
+Index: app/src/main/java/com/example/hifive/ui/activity/findIDPWActivity.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.example.hifive.ui.activity\r\n\r\nimport androidx.appcompat.app.AppCompatActivity\r\nimport android.os.Bundle\r\nimport android.widget.Toast\r\nimport androidx.core.view.isVisible\r\nimport com.example.hifive.data.RetrofitClient\r\nimport com.example.hifive.databinding.ActivityFindIdpwBinding\r\nimport java.security.MessageDigest\r\n\r\nclass findIDPWActivity : AppCompatActivity() {\r\n    override fun onCreate(savedInstanceState: Bundle?) {\r\n        super.onCreate(savedInstanceState)\r\n        val binding = ActivityFindIdpwBinding.inflate(layoutInflater)\r\n        setContentView(binding.root)\r\n\r\n        binding.idRadioButton.isChecked = true\r\n        binding.findEmailAddress.isVisible = false\r\n\r\n        binding.findSendButton.setOnClickListener {\r\n            //전송버튼 action\r\n            //todo - 서버 테스트\r\n            binding.findSendButton.text = \"재전송\"\r\n            binding.findVerifyButton.isEnabled = true\r\n            binding.Findverify.isEnabled = true\r\n            if(binding.idRadioButton.isSelected){\r\n                //id-코드요청\r\n                val name = binding.findName.text.toString()\r\n                val phone = binding.findPhone.text.toString()\r\n                RetrofitClient.requestAuth(this@findIDPWActivity, name, phone)\r\n            } else{\r\n                //pw-코드요청\r\n                val name = binding.findEmailAddress.text.toString()\r\n                val phone = binding.findPhone.text.toString()\r\n                val id = binding.findEmailAddress.text.toString()\r\n                RetrofitClient.requestPwAuth(this@findIDPWActivity, id, name, phone)\r\n            }\r\n        }\r\n\r\n        binding.findVerifyButton.setOnClickListener {\r\n            //인증코드 검증버튼 action\r\n            if(binding.idRadioButton.isSelected){\r\n                //id 찾기\r\n                //todo 검증 성공시 아이디 출력\r\n            } else{\r\n                //pw 찾기\r\n                //todo 검증 성공여부\r\n                //검증 성공\r\n                if(true){\r\n                    binding.findName.isVisible = false\r\n                    binding.findPhone.isVisible = false\r\n                    binding.Findverify.isVisible = false\r\n                    binding.idRadioButton.isEnabled = false\r\n                    binding.pwRadioButton.isEnabled = false\r\n                    binding.findSendButton.isVisible = false\r\n                    binding.findVerifyButton.isVisible = false\r\n                    binding.findEmailAddress.isEnabled = false\r\n                    binding.modiPW.isVisible = true\r\n                    binding.modiPW2.isVisible = true\r\n                    binding.modiButton.isVisible = true\r\n                }\r\n            }\r\n        }\r\n\r\n        binding.modiButton.setOnClickListener{\r\n            if(binding.modiPW.text.toString().equals(binding.modiPW2.text.toString())) {\r\n                val id = binding.findEmailAddress.text.toString()\r\n                val pwd = encrypt(binding.modiPW.text.toString())\r\n                RetrofitClient.changePWD(this@findIDPWActivity, id, pwd)\r\n            } else{\r\n                Toast.makeText(this, \"비밀번호를 확인해 주세요\", Toast.LENGTH_SHORT)\r\n            }\r\n        }\r\n\r\n        binding.idRadioButton.setOnClickListener{\r\n            binding.findEmailAddress.isVisible = false\r\n        }\r\n\r\n        binding.pwRadioButton.setOnClickListener{\r\n            binding.findEmailAddress.isVisible = true\r\n        }\r\n    }\r\n\r\n    fun encrypt(input: String): String {\r\n        val bytes = MessageDigest.getInstance(\"MD5\").digest(input.toByteArray(Charsets.UTF_8))\r\n        return bytes.joinToString(\"\") { \"%02x\".format(it) }\r\n    }\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/example/hifive/ui/activity/findIDPWActivity.kt b/app/src/main/java/com/example/hifive/ui/activity/findIDPWActivity.kt
+--- a/app/src/main/java/com/example/hifive/ui/activity/findIDPWActivity.kt	(revision 3620ea1a694ce806681b46357d3f5330d3af9b8e)
++++ b/app/src/main/java/com/example/hifive/ui/activity/findIDPWActivity.kt	(date 1684518963215)
+@@ -1,11 +1,22 @@
+ package com.example.hifive.ui.activity
+ 
++import android.app.AlertDialog
++import android.content.Context
+ import androidx.appcompat.app.AppCompatActivity
+ import android.os.Bundle
++import android.util.Log
+ import android.widget.Toast
+ import androidx.core.view.isVisible
+ import com.example.hifive.data.RetrofitClient
++import com.example.hifive.data.model.CommonResponse
++import com.example.hifive.data.model.FindIdRequest
++import com.example.hifive.data.model.FindIdResponse
+ import com.example.hifive.databinding.ActivityFindIdpwBinding
++import kotlinx.coroutines.CoroutineScope
++import kotlinx.coroutines.Dispatchers
++import kotlinx.coroutines.launch
++import kotlinx.coroutines.withContext
++import retrofit2.Retrofit
+ import java.security.MessageDigest
+ 
+ class findIDPWActivity : AppCompatActivity() {
+@@ -15,7 +26,12 @@
+         setContentView(binding.root)
+ 
+         binding.idRadioButton.isChecked = true
+-        binding.findEmailAddress.isVisible = false
++        binding.pwRadioButton.isChecked=false;
++        binding.findEmailAddress.isVisible = true
++        binding.findId.isVisible = false
++        binding.idvalue.isVisible=false
++
++
+ 
+         binding.findSendButton.setOnClickListener {
+             //전송버튼 action
+@@ -23,44 +39,71 @@
+             binding.findSendButton.text = "재전송"
+             binding.findVerifyButton.isEnabled = true
+             binding.Findverify.isEnabled = true
+-            if(binding.idRadioButton.isSelected){
+-                //id-코드요청
+-                val name = binding.findName.text.toString()
+-                val phone = binding.findPhone.text.toString()
+-                RetrofitClient.requestAuth(this@findIDPWActivity, name, phone)
+-            } else{
+-                //pw-코드요청
+-                val name = binding.findEmailAddress.text.toString()
+-                val phone = binding.findPhone.text.toString()
+-                val id = binding.findEmailAddress.text.toString()
+-                RetrofitClient.requestPwAuth(this@findIDPWActivity, id, name, phone)
++
++            val email = binding.findEmailAddress.text.toString()
++            val name = binding.findName.text.toString()
++            val id = binding.findEmailAddress.text.toString()
++
++
++            //이메일 전송
++            CoroutineScope(Dispatchers.IO).launch {
++                var certification = false;
++                Log.d("email check","$email")
++                val result = RetrofitClient.requestAuth(email)
++                //var success=false;
++                Log.d("result test", "$result")
+             }
+         }
+ 
+-        binding.findVerifyButton.setOnClickListener {
+-            //인증코드 검증버튼 action
+-            if(binding.idRadioButton.isSelected){
+-                //id 찾기
+-                //todo 검증 성공시 아이디 출력
+-            } else{
+-                //pw 찾기
+-                //todo 검증 성공여부
+-                //검증 성공
+-                if(true){
+-                    binding.findName.isVisible = false
+-                    binding.findPhone.isVisible = false
+-                    binding.Findverify.isVisible = false
+-                    binding.idRadioButton.isEnabled = false
+-                    binding.pwRadioButton.isEnabled = false
+-                    binding.findSendButton.isVisible = false
+-                    binding.findVerifyButton.isVisible = false
+-                    binding.findEmailAddress.isEnabled = false
+-                    binding.modiPW.isVisible = true
+-                    binding.modiPW2.isVisible = true
+-                    binding.modiButton.isVisible = true
++            binding.findVerifyButton.setOnClickListener {
++                val email = binding.findEmailAddress.text.toString()
++                val name = binding.findName.text.toString()
++                val id = binding.findEmailAddress.text.toString()
++                //인증코드 검증버튼 action 아이디 찾기
++                if (binding.idRadioButton.isChecked) {
++                    CoroutineScope(Dispatchers.IO).launch {
++                        val verify=binding.Findverify.text.toString();
++                        var certification="";
++                        var message=""
++                        var result=RetrofitClient.requestVerify(email,verify)
++                        Log.d("result 체크","$result")
++                        
++                        if(result?.success==true){
++                            certification="true";
++                            val result2=RetrofitClient.requestFindId(FindIdRequest(email,name,certification));
++                            if (result2?.success ==true) {
++                                message="아이디 : "+result2.id
++                            }else{
++                                message="이름 또는 이메일 틀림"
++                            }
++                        }
++                        withContext(Dispatchers.Main) {
++                            binding.idvalue.setText(message)
++                            binding.idvalue.isVisible = true
++                        }
++                    }
++                    //비밀번호 찾기
++                } else {
++                    Log.d("????","?????????")
++                    //pw 찾기
++                    //todo 검증 성공여부
++                    //검증 성공
++//                    if (true) {
++//                        binding.findName.isVisible = false
++//                        binding.findEmailAddress.isVisible = false
++//                        binding.Findverify.isVisible = false
++//                        binding.idRadioButton.isEnabled = false
++//                        binding.pwRadioButton.isEnabled = false
++//                        binding.findSendButton.isVisible = false
++//                        binding.findVerifyButton.isVisible = false
++//                        binding.findEmailAddress.isEnabled = false
++//                        binding.modiPW.isVisible = true
++//                        binding.modiPW2.isVisible = true
++//                        binding.modiButton.isVisible = true
++//                    }
+                 }
+             }
+-        }
++
+ 
+         binding.modiButton.setOnClickListener{
+             if(binding.modiPW.text.toString().equals(binding.modiPW2.text.toString())) {
+@@ -73,11 +116,11 @@
+         }
+ 
+         binding.idRadioButton.setOnClickListener{
+-            binding.findEmailAddress.isVisible = false
++            binding.findId.isVisible = false
+         }
+ 
+         binding.pwRadioButton.setOnClickListener{
+-            binding.findEmailAddress.isVisible = true
++            binding.findId.isVisible = true
+         }
+     }
+ 
+@@ -85,4 +128,15 @@
+         val bytes = MessageDigest.getInstance("MD5").digest(input.toByteArray(Charsets.UTF_8))
+         return bytes.joinToString("") { "%02x".format(it) }
+     }
++
++
++    private fun showDialog(context: Context, message: String) {
++        val builder = AlertDialog.Builder(context)
++        builder.setMessage(message)
++        builder.setPositiveButton("확인") { dialog, _ ->
++            // 확인 버튼을 눌렀을 때 수행할 동작
++            dialog.dismiss() // 다이얼로그 닫기
++        }
++        builder.create().show()
++    }
+ }
+\ No newline at end of file
+Index: app/src/main/java/com/example/hifive/data/RetrofitClient.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.example.hifive.data\r\n\r\nimport android.app.Activity\r\nimport android.util.Log\r\nimport android.widget.Toast\r\nimport com.example.hifive.data.model.*\r\nimport com.example.hifive.data.viewmodel.ApiService\r\nimport com.example.hifive.ui.activity.LoginActivity\r\nimport com.example.hifive.ui.activity.MonthlyListActivity\r\nimport com.example.hifive.ui.activity.SignupActivity\r\nimport kotlinx.coroutines.*\r\nimport kotlinx.coroutines.channels.Channel\r\nimport kotlinx.coroutines.channels.consumeEach\r\nimport retrofit2.Retrofit\r\nimport retrofit2.converter.gson.GsonConverterFactory\r\n\r\nobject RetrofitClient {\r\n    private val url = \"http://hxlab.co.kr:30000\"\r\n    val retrofit: Retrofit\r\n        get() = Retrofit.Builder()\r\n            .baseUrl(url)\r\n            .addConverterFactory(GsonConverterFactory.create())\r\n            .build()\r\n\r\n    val ApiService = retrofit.create(ApiService::class.java)\r\n\r\n    //login error\r\n    fun login(request: LoginRequest): LoginResponse? {\r\n        Log.d(\"login request\",\"${request.pwd}\")\r\n        val loginResponse = CoroutineScope(Dispatchers.IO).launch {\r\n            try {\r\n                val response = ApiService.login(request)\r\n                Log.d(\"response\", \"${response.message()}\"+\"/\"+\"${response.isSuccessful}\")\r\n                if (response.isSuccessful) {\r\n                    Log.d(\"response success\", \"${response.isSuccessful}\")\r\n                    val loginResponse = response.body()\r\n                    Log.d(\"response success\", \"${response.body()}\")\r\n                    if (loginResponse?.success == true) {\r\n                        // 로그인 성공 처리\r\n                        //val token = loginResponse.token\r\n                        //val message = loginResponse.token.toString()\r\n                        Log.d(\"login response success\", \"${loginResponse.message}\")\r\n                        withContext(Dispatchers.Main) {\r\n                            //Toast.makeText(LoginActivity(), loginResponse.toString(), Toast.LENGTH_SHORT).show()\r\n                            return@withContext loginResponse\r\n                        }\r\n                        // 토큰 저장 등의 작업 수행\r\n                    } else {\r\n                        // 로그인 실패 처리\r\n                        val message = loginResponse?.success ?: \"로그인 실패\"\r\n                        withContext(Dispatchers.Main) {\r\n                            Toast.makeText(LoginActivity(), \"${message}\", Toast.LENGTH_SHORT).show()\r\n                            return@withContext loginResponse\r\n                        }\r\n                    }\r\n\r\n                } else {\r\n                    // 로그인 실패 처리\r\n                    val message = \"로그인 실패\"\r\n                    withContext(Dispatchers.Main) {\r\n                        Toast.makeText(LoginActivity(), message, Toast.LENGTH_LONG).show()\r\n                    }\r\n                }\r\n            } catch (e: Exception) {\r\n                // 예외 처리\r\n                val message = \"로그인 중 오류 발생\"\r\n                withContext(Dispatchers.Main) {\r\n                    Log.e(\"${message}\", \"${e.message}\")\r\n                    //Toast.makeText(context, e.message, Toast.LENGTH_SHORT).show()\r\n                }\r\n            }\r\n        }\r\n\r\n        return null\r\n    }\r\n\r\n    //register error\r\n    //회원가입 기능\r\n    suspend fun signUp(context: SignupActivity, request: RegisterRequest): Boolean {\r\n        var success:Boolean = false\r\n            try {\r\n                val response = ApiService.signUp(request)\r\n                //Log.d(\"회원가입 상태\", response.toString())\r\n                if(response.isSuccessful) {\r\n                    Log.d(\"1\", \"response successful\")\r\n                    val registerResponse = response.body()\r\n                    if(registerResponse?.success == true) {\r\n                        Log.d(\"2\", \"response success true\")\r\n                        success = true\r\n                        Log.d(\"2-2\", \"${success}\")\r\n                    }\r\n                    else {\r\n                        withContext(Dispatchers.Main) {\r\n                            Toast.makeText(context, \"${registerResponse?.message}\", Toast.LENGTH_SHORT).show()\r\n                        }\r\n                        Log.d(\"3\", \"response success false\")\r\n                    }\r\n                } else{\r\n                    Log.d(\"4\", \"response fail\")\r\n                }\r\n\r\n            } catch (e: Exception){\r\n                val message = \"통신 오류 발생\"\r\n                withContext(Dispatchers.Main) {\r\n                    Toast.makeText(context, e.message, Toast.LENGTH_SHORT).show()\r\n                }\r\n                e.message?.let { Log.d(message, it) }\r\n            }\r\n        Log.d(\"5\", \"${success}\")\r\n        return success\r\n    }\r\n\r\n    fun reserveCredit() {\r\n\r\n    }\r\n    // 월별사용내역 request\r\n    suspend fun requestMonthData(request: SpentListRequest): PayListResponse?{\r\n        var payListResponse : PayListResponse? = null\r\n        try {\r\n            val response = ApiService.getPayList(request.id, request.year, request.month)\r\n            //val response = ApiService.getPayList(request)\r\n            if(response.isSuccessful){\r\n                payListResponse = response.body()\r\n                // todo 값 받아오기\r\n                Log.d(\"pay list\", \"${payListResponse.toString()}\")\r\n            }\r\n        } catch (e: Exception){\r\n            val message = \"통신 오류 발생\"\r\n            e.message?.let { Log.e(message, it) }\r\n        } finally {\r\n            return payListResponse\r\n        }\r\n    }\r\n\r\n    // 월별 총계 함수\r\n    suspend fun requestTotalPrice(request: SpentListRequest) :Int {\r\n        var total = 0\r\n        try{\r\n            val response = ApiService.getPayList(request.id, request.year, request.month)\r\n            //val response = ApiService.getPayList(request)\r\n            if(response.isSuccessful) {\r\n                val payListResponse = response.body()\r\n                if (payListResponse != null) {\r\n                    total = payListResponse.total\r\n                } else{\r\n                    Log.e(\"payList NULL\", \"${payListResponse}\")\r\n                }\r\n            } else{\r\n                Log.e(\"response error\", \"${response}\")\r\n            }\r\n        } catch (e: Exception){\r\n            e.message?.let { Log.e(\"통신 오류 발생\", it) }\r\n        } finally {\r\n            return total\r\n        }\r\n    }\r\n\r\n    fun requestAuth(context: Activity, phone: String, name: String) {\r\n        CoroutineScope(Dispatchers.IO).launch{\r\n            try{\r\n                val response = ApiService.auth(name, phone)\r\n                if(response.body() == true){\r\n                    val message = \"인증번호를 발송 했습니다\"\r\n                    withContext(Dispatchers.Main) {\r\n                        Toast.makeText(context, message, Toast.LENGTH_SHORT).show()\r\n                    }\r\n                } else{\r\n                    withContext(Dispatchers.Main) {\r\n                        Toast.makeText(context, \"요청 실패\", Toast.LENGTH_SHORT).show()\r\n                    }\r\n                }\r\n\r\n            } catch (e: Exception){\r\n                val message = \"요청 실패\"\r\n                withContext(Dispatchers.Main) {\r\n                    Toast.makeText(context, e.message, Toast.LENGTH_SHORT).show()\r\n                }\r\n                e.message?.let { Log.d(message, it) }\r\n            }\r\n        }\r\n    }\r\n    fun requestPwAuth(context: Activity, id: String, name: String, phone: String) {\r\n        CoroutineScope(Dispatchers.IO).launch{\r\n            try{\r\n                val response = ApiService.pwAuth(id, name, phone)\r\n                if(response.isSuccessful){\r\n                    val message = \"인증번호를 발송 했습니다\"\r\n                    withContext(Dispatchers.Main) {\r\n                        Toast.makeText(context, message, Toast.LENGTH_SHORT).show()\r\n                    }\r\n                } else{\r\n                    withContext(Dispatchers.Main) {\r\n                        Toast.makeText(context, \"요청 실패\", Toast.LENGTH_SHORT).show()\r\n                    }\r\n                }\r\n\r\n            } catch (e: Exception){\r\n                val message = \"요청 실패\"\r\n                withContext(Dispatchers.Main) {\r\n                    Toast.makeText(context, e.message, Toast.LENGTH_SHORT).show()\r\n                }\r\n                e.message?.let { Log.d(message, it) }\r\n            }\r\n        }\r\n    }\r\n    fun requestVerify(context: SignupActivity, phone: String, request: Int){\r\n        CoroutineScope(Dispatchers.IO).launch{\r\n            try{\r\n                val response = ApiService.auth_verify(phone, request)\r\n                if(response.isSuccessful){\r\n                    val message = \"인증 되었습니다.\"\r\n                    withContext(Dispatchers.Main) {\r\n                        Toast.makeText(context, message, Toast.LENGTH_SHORT).show()\r\n                    }\r\n                } else{\r\n                    val message = \"확인코드가 일치하지 않습니다.\"\r\n                    withContext(Dispatchers.Main) {\r\n                        Toast.makeText(context, message, Toast.LENGTH_SHORT).show()\r\n                    }\r\n                }\r\n\r\n\r\n            } catch (e: Exception){\r\n                val message = \"요청 실패\"\r\n                withContext(Dispatchers.Main) {\r\n                    Toast.makeText(context, e.message, Toast.LENGTH_SHORT).show()\r\n                }\r\n                e.message?.let { Log.d(message, it) }\r\n            }\r\n        }\r\n    }\r\n\r\n\r\n    //비밀번호 수정 기능\r\n    fun changePWD(context: Activity, id: String, pwd: String){\r\n        // 비밀번호 교체\r\n        CoroutineScope(Dispatchers.IO).launch {\r\n            try {\r\n                val response = ApiService.change_pwd(IDPWdata(id, pwd))\r\n                if(response.isSuccessful) {\r\n                    val message = response.body()?.message\r\n                    withContext(Dispatchers.Main) {\r\n                        Toast.makeText(context, message, Toast.LENGTH_SHORT).show()\r\n                        context.finish()\r\n                    }\r\n                }\r\n            } catch (e: Exception){\r\n                val message = \"요청 실패\"\r\n                withContext(Dispatchers.Main) {\r\n                    Toast.makeText(context, e.message, Toast.LENGTH_SHORT).show()\r\n                }\r\n                e.message?.let { Log.d(message, it) }\r\n            }\r\n        }\r\n    }\r\n\r\n    // 회원탈퇴\r\n    fun deleteUser(context: Activity, id: String, pwd: String){\r\n        CoroutineScope(Dispatchers.IO).launch {\r\n            try{\r\n                val response = ApiService.delete_user(IDPWdata(id, pwd))\r\n                if(response.isSuccessful) {\r\n                    val message = response.body()?.message\r\n                    withContext(Dispatchers.Main) {\r\n                        Toast.makeText(context, message, Toast.LENGTH_SHORT).show()\r\n                        context.finish()\r\n                    }\r\n                }\r\n            } catch (e: Exception){\r\n                val message = \"요청 실패\"\r\n                withContext(Dispatchers.Main) {\r\n                    Toast.makeText(context, e.message, Toast.LENGTH_SHORT).show()\r\n                }\r\n                e.message?.let { Log.d(message, it) }\r\n            }\r\n        }\r\n    }\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/example/hifive/data/RetrofitClient.kt b/app/src/main/java/com/example/hifive/data/RetrofitClient.kt
+--- a/app/src/main/java/com/example/hifive/data/RetrofitClient.kt	(revision 3620ea1a694ce806681b46357d3f5330d3af9b8e)
++++ b/app/src/main/java/com/example/hifive/data/RetrofitClient.kt	(date 1684516287732)
+@@ -1,16 +1,15 @@
+ package com.example.hifive.data
+ 
++import android.annotation.SuppressLint
+ import android.app.Activity
+ import android.util.Log
+ import android.widget.Toast
+ import com.example.hifive.data.model.*
+ import com.example.hifive.data.viewmodel.ApiService
+ import com.example.hifive.ui.activity.LoginActivity
+-import com.example.hifive.ui.activity.MonthlyListActivity
+ import com.example.hifive.ui.activity.SignupActivity
++import com.example.hifive.ui.activity.findIDPWActivity
+ import kotlinx.coroutines.*
+-import kotlinx.coroutines.channels.Channel
+-import kotlinx.coroutines.channels.consumeEach
+ import retrofit2.Retrofit
+ import retrofit2.converter.gson.GsonConverterFactory
+ 
+@@ -24,58 +23,52 @@
+ 
+     val ApiService = retrofit.create(ApiService::class.java)
+ 
+-    //login error
+-    fun login(request: LoginRequest): LoginResponse? {
+-        Log.d("login request","${request.pwd}")
+-        val loginResponse = CoroutineScope(Dispatchers.IO).launch {
++    //로그인
++    suspend fun login(request: LoginRequest): LoginResponse? {
++        var loginResponse: LoginResponse? = null
++
++        withContext(Dispatchers.IO) {
+             try {
+                 val response = ApiService.login(request)
+-                Log.d("response", "${response.message()}"+"/"+"${response.isSuccessful}")
++                // ... 기타 로그와 처리 ...
++
+                 if (response.isSuccessful) {
+-                    Log.d("response success", "${response.isSuccessful}")
+-                    val loginResponse = response.body()
+-                    Log.d("response success", "${response.body()}")
++                    loginResponse = response.body()
++                    // ... 기타 로그와 처리 ...
++
+                     if (loginResponse?.success == true) {
+-                        // 로그인 성공 처리
+-                        //val token = loginResponse.token
+-                        //val message = loginResponse.token.toString()
+-                        Log.d("login response success", "${loginResponse.message}")
++                        //Log.d("login response success ???", "${loginResponse.message}"+"+"+"$success")
+                         withContext(Dispatchers.Main) {
+-                            //Toast.makeText(LoginActivity(), loginResponse.toString(), Toast.LENGTH_SHORT).show()
++                            Toast.makeText(LoginActivity(), loginResponse.toString(), Toast.LENGTH_SHORT).show()
+                             return@withContext loginResponse
+                         }
+-                        // 토큰 저장 등의 작업 수행
++                        // ... 로그인 성공 처리 ...
+                     } else {
+-                        // 로그인 실패 처리
++                        // ... 로그인 실패 처리 ...
+                         val message = loginResponse?.success ?: "로그인 실패"
+                         withContext(Dispatchers.Main) {
+-                            Toast.makeText(LoginActivity(), "${message}", Toast.LENGTH_SHORT).show()
++                            //Toast.makeText(LoginActivity(), "${message}", Toast.LENGTH_SHORT).show()
+                             return@withContext loginResponse
+                         }
+                     }
+-
+                 } else {
+-                    // 로그인 실패 처리
++                    // ... 로그인 실패 처리 ...
+                     val message = "로그인 실패"
+                     withContext(Dispatchers.Main) {
+                         Toast.makeText(LoginActivity(), message, Toast.LENGTH_LONG).show()
+                     }
+                 }
+             } catch (e: Exception) {
+-                // 예외 처리
+-                val message = "로그인 중 오류 발생"
+-                withContext(Dispatchers.Main) {
+-                    Log.e("${message}", "${e.message}")
+-                    //Toast.makeText(context, e.message, Toast.LENGTH_SHORT).show()
+-                }
+-            }
+-        }
++                // ... 예외 처리 ...
++            }
++        }
++        return loginResponse
++    }
+ 
+-        return null
+-    }
+ 
+     //register error
+     //회원가입 기능
++    @SuppressLint("SuspiciousIndentation")
+     suspend fun signUp(context: SignupActivity, request: RegisterRequest): Boolean {
+         var success:Boolean = false
+             try {
+@@ -84,6 +77,7 @@
+                 if(response.isSuccessful) {
+                     Log.d("1", "response successful")
+                     val registerResponse = response.body()
++                    Log.d("반환값 확인","$registerResponse")
+                     if(registerResponse?.success == true) {
+                         Log.d("2", "response success true")
+                         success = true
+@@ -110,6 +104,8 @@
+         return success
+     }
+ 
++
++
+     fun reserveCredit() {
+ 
+     }
+@@ -155,81 +151,90 @@
+         }
+     }
+ 
+-    fun requestAuth(context: Activity, phone: String, name: String) {
+-        CoroutineScope(Dispatchers.IO).launch{
+-            try{
+-                val response = ApiService.auth(name, phone)
+-                if(response.body() == true){
+-                    val message = "인증번호를 발송 했습니다"
+-                    withContext(Dispatchers.Main) {
+-                        Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+-                    }
+-                } else{
+-                    withContext(Dispatchers.Main) {
+-                        Toast.makeText(context, "요청 실패", Toast.LENGTH_SHORT).show()
+-                    }
+-                }
+-
+-            } catch (e: Exception){
+-                val message = "요청 실패"
+-                withContext(Dispatchers.Main) {
+-                    Toast.makeText(context, e.message, Toast.LENGTH_SHORT).show()
+-                }
+-                e.message?.let { Log.d(message, it) }
+-            }
++    // 인증번호 요청
++    // todo server test
++    suspend fun requestAuth(email: String): CommonResponse?{
++        var result: CommonResponse? = null
++        try{
++            val response = ApiService.auth(AuthRequest(email))
++            Log.d("response", "${response}")
++            if(response.isSuccessful){
++                result = response.body()
++            } else{
++                Log.e("response error", "requestAuth response fail")
++            }
++        } catch (e: Exception){
++            val message = "요청 실패"
++            Log.e(message, "${e.message}")
++        } finally {
++            return result
+         }
+     }
+-    fun requestPwAuth(context: Activity, id: String, name: String, phone: String) {
+-        CoroutineScope(Dispatchers.IO).launch{
+-            try{
+-                val response = ApiService.pwAuth(id, name, phone)
+-                if(response.isSuccessful){
+-                    val message = "인증번호를 발송 했습니다"
+-                    withContext(Dispatchers.Main) {
+-                        Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+-                    }
+-                } else{
+-                    withContext(Dispatchers.Main) {
+-                        Toast.makeText(context, "요청 실패", Toast.LENGTH_SHORT).show()
+-                    }
+-                }
+-
+-            } catch (e: Exception){
+-                val message = "요청 실패"
+-                withContext(Dispatchers.Main) {
+-                    Toast.makeText(context, e.message, Toast.LENGTH_SHORT).show()
+-                }
+-                e.message?.let { Log.d(message, it) }
+-            }
++
++//    fun requestPwAuth(context: Activity, id: String, name: String, phone: String) {
++//        CoroutineScope(Dispatchers.IO).launch{
++//            try{
++//                val response = ApiService.pwAuth(id, name, phone)
++//                if(response.isSuccessful){
++//                    val message = "인증번호를 발송 했습니다"
++//                    withContext(Dispatchers.Main) {
++//                        Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
++//                    }
++//                } else{
++//                    withContext(Dispatchers.Main) {
++//                        Toast.makeText(context, "요청 실패", Toast.LENGTH_SHORT).show()
++//                    }
++//                }
++//
++//            } catch (e: Exception){
++//                val message = "요청 실패"
++//                withContext(Dispatchers.Main) {
++//                    Toast.makeText(context, e.message, Toast.LENGTH_SHORT).show()
++//                }
++//                e.message?.let { Log.d(message, it) }
++//            }
++//        }
++//    }
++
++
++    suspend fun requestVerify(email: String, number: String): CommonResponse?{
++        var result : CommonResponse? = null
++        try{
++            val response = ApiService.auth_verify(AuthVerifyRequest(email, number))
++            if(response.isSuccessful){
++                result = response.body()
++            } else{
++                Log.e("response error", "AuthVerify response fail")
++            }
++        } catch (e: Exception){
++            Log.e("auth verify exception", "${e.message}")
++        } finally {
++            return result
+         }
+     }
+-    fun requestVerify(context: SignupActivity, phone: String, request: Int){
+-        CoroutineScope(Dispatchers.IO).launch{
+-            try{
+-                val response = ApiService.auth_verify(phone, request)
+-                if(response.isSuccessful){
+-                    val message = "인증 되었습니다."
+-                    withContext(Dispatchers.Main) {
+-                        Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+-                    }
+-                } else{
+-                    val message = "확인코드가 일치하지 않습니다."
+-                    withContext(Dispatchers.Main) {
+-                        Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+-                    }
+-                }
+-
++
++
++    //아이디찾기
++    suspend fun requestFindId(request:FindIdRequest):FindIdResponse?{
++        var findIdResponse:FindIdResponse?=null
++        try{
++            val response = ApiService.find_id(request.name,request.email,request.certification)
++            Log.d("제발요오오오오오","$response")
++            if(response.isSuccessful){
++                findIdResponse=response.body()
++                Log.d("test","id찾기 테스트 ${findIdResponse}")
++            }
+ 
+-            } catch (e: Exception){
+-                val message = "요청 실패"
+-                withContext(Dispatchers.Main) {
+-                    Toast.makeText(context, e.message, Toast.LENGTH_SHORT).show()
+-                }
+-                e.message?.let { Log.d(message, it) }
+-            }
++        }catch (e:Exception){
++            val message = "통신 오류 발생"
++//            withContext(Dispatchers.Main) {
++//                Toast.makeText(context, e.message, Toast.LENGTH_SHORT).show()
++//            }
++            e.message?.let { Log.d(message, it) }
++        }finally {
++            return findIdResponse
+         }
+     }
+-
+ 
+     //비밀번호 수정 기능
+     fun changePWD(context: Activity, id: String, pwd: String){
+Index: app/src/main/java/com/example/hifive/data/viewmodel/ApiService.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.example.hifive.data.viewmodel\r\n\r\nimport com.example.hifive.data.model.*\r\nimport retrofit2.Response\r\nimport retrofit2.http.*\r\n\r\ninterface ApiService {\r\n    @POST(\"/users/login\")\r\n    suspend fun login(\r\n        @Body request: LoginRequest\r\n    ): Response<LoginResponse>\r\n\r\n    @POST(\"/users/register\")\r\n    suspend fun signUp(\r\n        @Body request: RegisterRequest\r\n    ): Response<CommonResponse>\r\n\r\n    @POST(\"/auth\")\r\n    suspend fun auth(\r\n        @Body name: String,\r\n        @Body phone : String\r\n    ): Response<Boolean>\r\n\r\n    @POST(\"/pw/auth\")\r\n    suspend fun pwAuth(\r\n        @Body id: String,\r\n        @Body name: String,\r\n        @Body phone : String\r\n    ): Response<Boolean>\r\n\r\n    @POST(\"/auth/verify\")\r\n    suspend fun auth_verify(\r\n        @Body phone: String,\r\n        @Body request: Int\r\n    ): Response<Boolean>\r\n\r\n    @PUT(\"/users/change-pwd\")\r\n    suspend fun change_pwd(\r\n        @Body request: IDPWdata\r\n    ): Response<CommonResponse>\r\n\r\n    @HTTP(method = \"DELETE\", path = \"/users/delete\", hasBody = true)\r\n    suspend fun delete_user(\r\n        @Body request: IDPWdata\r\n    ): Response<CommonResponse>\r\n\r\n\r\n    @GET(\"/users/pay-list\")\r\n    suspend fun getPayList(\r\n        @Query(\"id\") id: String,\r\n        @Query(\"year\") year: String,\r\n        @Query(\"month\") month: String\r\n    ): Response<PayListResponse>\r\n\r\n\r\n/*\r\n    @HTTP(method = \"GET\", path = \"/users/pay-list\", hasBody = true)\r\n    suspend fun getPayList(\r\n       @Body request: SpentListRequest\r\n    ): Response<PayListResponse>\r\n*/\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/example/hifive/data/viewmodel/ApiService.kt b/app/src/main/java/com/example/hifive/data/viewmodel/ApiService.kt
+--- a/app/src/main/java/com/example/hifive/data/viewmodel/ApiService.kt	(revision 3620ea1a694ce806681b46357d3f5330d3af9b8e)
++++ b/app/src/main/java/com/example/hifive/data/viewmodel/ApiService.kt	(date 1684517179121)
+@@ -5,46 +5,59 @@
+ import retrofit2.http.*
+ 
+ interface ApiService {
++    //로그인 요청, 수정요망
+     @POST("/users/login")
+     suspend fun login(
+         @Body request: LoginRequest
+     ): Response<LoginResponse>
+ 
++    // 회원가입 요청, 수정요망
+     @POST("/users/register")
+     suspend fun signUp(
+         @Body request: RegisterRequest
+     ): Response<CommonResponse>
+ 
+-    @POST("/auth")
++    // 인증번호 요청
++    @POST("/users/auth")
+     suspend fun auth(
+-        @Body name: String,
+-        @Body phone : String
+-    ): Response<Boolean>
++        @Body request: AuthRequest
++    ): Response<CommonResponse>
+ 
+-    @POST("/pw/auth")
+-    suspend fun pwAuth(
+-        @Body id: String,
+-        @Body name: String,
+-        @Body phone : String
+-    ): Response<Boolean>
++    // 비밀번호 수정 인증번호 요청, 수정요망
++//    @POST("/pw/auth")
++//    suspend fun pwAuth(
++//        @Body id: String,
++//        @Body name: String,
++//        @Body phone : String
++//    ): Response<Boolean>
+ 
+-    @POST("/auth/verify")
++    // 검증 요청
++    @POST("/users/auth-check")
+     suspend fun auth_verify(
+-        @Body phone: String,
+-        @Body request: Int
+-    ): Response<Boolean>
++        @Body request : AuthVerifyRequest
++    ): Response<CommonResponse>
+ 
++    //아이디 찾기
++    @GET("/users/find-id")
++    suspend fun find_id(
++        @Query("name") name:String,
++        @Query("email") email:String,
++        @Query("certification") certification:String
++    ):Response<FindIdResponse>
++
++    // 비밀번호 수정
+     @PUT("/users/change-pwd")
+     suspend fun change_pwd(
+         @Body request: IDPWdata
+     ): Response<CommonResponse>
+ 
++    // 화윈 삭제
+     @HTTP(method = "DELETE", path = "/users/delete", hasBody = true)
+     suspend fun delete_user(
+         @Body request: IDPWdata
+     ): Response<CommonResponse>
+ 
+-
++    // 결제 내역 리스트 호출
+     @GET("/users/pay-list")
+     suspend fun getPayList(
+         @Query("id") id: String,
+@@ -53,10 +66,4 @@
+     ): Response<PayListResponse>
+ 
+ 
+-/*
+-    @HTTP(method = "GET", path = "/users/pay-list", hasBody = true)
+-    suspend fun getPayList(
+-       @Body request: SpentListRequest
+-    ): Response<PayListResponse>
+-*/
+ }
+\ No newline at end of file
+Index: app/src/main/res/layout/activity_find_idpw.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"utf-8\"?>\r\n<androidx.constraintlayout.widget.ConstraintLayout xmlns:android=\"http://schemas.android.com/apk/res/android\"\r\n    xmlns:app=\"http://schemas.android.com/apk/res-auto\"\r\n    xmlns:tools=\"http://schemas.android.com/tools\"\r\n    android:layout_width=\"match_parent\"\r\n    android:layout_height=\"match_parent\"\r\n    tools:context=\".ui.activity.findIDPWActivity\">\r\n\r\n    <LinearLayout\r\n        android:layout_width=\"match_parent\"\r\n        android:layout_height=\"match_parent\"\r\n        android:layout_marginStart=\"30dp\"\r\n        android:layout_marginTop=\"20dp\"\r\n        android:layout_marginEnd=\"30dp\"\r\n        android:orientation=\"vertical\"\r\n        app:layout_constraintEnd_toEndOf=\"parent\"\r\n        app:layout_constraintStart_toStartOf=\"parent\"\r\n        app:layout_constraintTop_toTopOf=\"parent\">\r\n\r\n        <LinearLayout\r\n            android:layout_width=\"match_parent\"\r\n            android:layout_height=\"wrap_content\"\r\n            android:orientation=\"horizontal\">\r\n\r\n            <RadioGroup\r\n                android:layout_width=\"match_parent\"\r\n                android:layout_height=\"match_parent\"\r\n                android:layout_weight=\"1\">\r\n\r\n                <RadioButton\r\n                    android:id=\"@+id/idRadioButton\"\r\n                    android:layout_width=\"wrap_content\"\r\n                    android:layout_height=\"wrap_content\"\r\n                    android:layout_weight=\"1\"\r\n                    android:text=\"ID찾기\" />\r\n\r\n                <RadioButton\r\n                    android:id=\"@+id/pwRadioButton\"\r\n                    android:layout_width=\"wrap_content\"\r\n                    android:layout_height=\"wrap_content\"\r\n                    android:layout_weight=\"1\"\r\n                    android:text=\"PW수정\" />\r\n\r\n            </RadioGroup>\r\n\r\n        </LinearLayout>\r\n\r\n        <EditText\r\n            android:id=\"@+id/findEmailAddress\"\r\n            android:layout_width=\"wrap_content\"\r\n            android:layout_height=\"wrap_content\"\r\n            android:ems=\"10\"\r\n            android:inputType=\"textEmailAddress\"\r\n            android:visibility=\"invisible\" />\r\n\r\n        <EditText\r\n            android:id=\"@+id/findName\"\r\n            android:layout_width=\"wrap_content\"\r\n            android:layout_height=\"wrap_content\"\r\n            android:ems=\"10\"\r\n            android:inputType=\"textPersonName\"\r\n            android:text=\"Name\" />\r\n\r\n        <LinearLayout\r\n            android:layout_width=\"match_parent\"\r\n            android:layout_height=\"wrap_content\"\r\n            android:orientation=\"horizontal\">\r\n\r\n            <EditText\r\n                android:id=\"@+id/findPhone\"\r\n                android:layout_width=\"wrap_content\"\r\n                android:layout_height=\"wrap_content\"\r\n                android:ems=\"10\"\r\n                android:inputType=\"phone\" />\r\n\r\n            <Button\r\n                android:id=\"@+id/findSendButton\"\r\n                android:layout_width=\"wrap_content\"\r\n                android:layout_height=\"wrap_content\"\r\n                android:text=\"전송\" />\r\n\r\n        </LinearLayout>\r\n\r\n        <LinearLayout\r\n            android:layout_width=\"match_parent\"\r\n            android:layout_height=\"wrap_content\"\r\n            android:orientation=\"horizontal\">\r\n\r\n            <EditText\r\n                android:id=\"@+id/Findverify\"\r\n                android:layout_width=\"wrap_content\"\r\n                android:layout_height=\"wrap_content\"\r\n                android:ems=\"10\"\r\n                android:enabled=\"false\"\r\n                android:inputType=\"numberDecimal\" />\r\n\r\n            <Button\r\n                android:id=\"@+id/findVerifyButton\"\r\n                android:layout_width=\"wrap_content\"\r\n                android:layout_height=\"wrap_content\"\r\n                android:enabled=\"false\"\r\n                android:text=\"확인\" />\r\n        </LinearLayout>\r\n\r\n        <EditText\r\n            android:id=\"@+id/modiPW\"\r\n            android:layout_width=\"wrap_content\"\r\n            android:layout_height=\"wrap_content\"\r\n            android:ems=\"10\"\r\n            android:inputType=\"textPassword\"\r\n            android:visibility=\"invisible\" />\r\n\r\n        <LinearLayout\r\n            android:layout_width=\"wrap_content\"\r\n            android:layout_height=\"wrap_content\"\r\n            android:orientation=\"horizontal\">\r\n\r\n            <EditText\r\n                android:id=\"@+id/modiPW2\"\r\n                android:layout_width=\"wrap_content\"\r\n                android:layout_height=\"wrap_content\"\r\n                android:ems=\"10\"\r\n                android:inputType=\"textPassword\"\r\n                android:visibility=\"invisible\" />\r\n\r\n            <Button\r\n                android:id=\"@+id/modiButton\"\r\n                android:layout_width=\"wrap_content\"\r\n                android:layout_height=\"wrap_content\"\r\n                android:layout_weight=\"1\"\r\n                android:text=\"수정\"\r\n                android:visibility=\"invisible\" />\r\n        </LinearLayout>\r\n\r\n    </LinearLayout>\r\n\r\n</androidx.constraintlayout.widget.ConstraintLayout>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/res/layout/activity_find_idpw.xml b/app/src/main/res/layout/activity_find_idpw.xml
+--- a/app/src/main/res/layout/activity_find_idpw.xml	(revision 3620ea1a694ce806681b46357d3f5330d3af9b8e)
++++ b/app/src/main/res/layout/activity_find_idpw.xml	(date 1684518340608)
+@@ -39,27 +39,34 @@
+                     android:layout_width="wrap_content"
+                     android:layout_height="wrap_content"
+                     android:layout_weight="1"
+-                    android:text="PW수정" />
++                    android:text="PW찾기" />
+ 
+             </RadioGroup>
+ 
+         </LinearLayout>
+ 
++<!--        <EditText-->
++<!--            android:id="@+id/findEmailAddress"-->
++<!--            android:layout_width="wrap_content"-->
++<!--            android:layout_height="wrap_content"-->
++<!--            android:ems="10"-->
++<!--            android:inputType="textEmailAddress"-->
++<!--            android:visibility="invisible" />-->
++
+         <EditText
+-            android:id="@+id/findEmailAddress"
++            android:id="@+id/findName"
+             android:layout_width="wrap_content"
+             android:layout_height="wrap_content"
+             android:ems="10"
+-            android:inputType="textEmailAddress"
+-            android:visibility="invisible" />
+-
++            android:inputType="textPersonName"
++            android:hint="이름" />
+         <EditText
+-            android:id="@+id/findName"
++            android:id="@+id/findId"
+             android:layout_width="wrap_content"
+             android:layout_height="wrap_content"
+             android:ems="10"
+             android:inputType="textPersonName"
+-            android:text="Name" />
++            android:hint="아이디" />
+ 
+         <LinearLayout
+             android:layout_width="match_parent"
+@@ -67,11 +74,12 @@
+             android:orientation="horizontal">
+ 
+             <EditText
+-                android:id="@+id/findPhone"
++                android:id="@+id/findEmailAddress"
+                 android:layout_width="wrap_content"
+                 android:layout_height="wrap_content"
+                 android:ems="10"
+-                android:inputType="phone" />
++                android:inputType="textEmailAddress"
++                android:hint="이메일"/>
+ 
+             <Button
+                 android:id="@+id/findSendButton"
+@@ -92,7 +100,8 @@
+                 android:layout_height="wrap_content"
+                 android:ems="10"
+                 android:enabled="false"
+-                android:inputType="numberDecimal" />
++                android:inputType="numberDecimal"
++                android:text="인증번호"/>
+ 
+             <Button
+                 android:id="@+id/findVerifyButton"
+@@ -132,6 +141,11 @@
+                 android:visibility="invisible" />
+         </LinearLayout>
+ 
++        <TextView
++            android:id="@+id/idvalue"
++            android:layout_width="match_parent"
++            android:layout_height="40dp" />
++
+     </LinearLayout>
+ 
+ </androidx.constraintlayout.widget.ConstraintLayout>
+\ No newline at end of file
+Index: app/src/main/java/com/example/hifive/ui/activity/LoginActivity.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.example.hifive.ui.activity\r\n\r\nimport android.app.Activity\r\nimport android.content.Intent\r\nimport android.os.Bundle\r\nimport android.text.Editable\r\nimport android.text.TextWatcher\r\nimport android.util.Log\r\nimport android.view.View\r\nimport android.view.inputmethod.EditorInfo\r\nimport android.widget.EditText\r\nimport android.widget.Toast\r\nimport androidx.annotation.StringRes\r\nimport androidx.lifecycle.Observer\r\nimport androidx.lifecycle.ViewModelProvider\r\nimport com.example.hifive.R\r\nimport com.example.hifive.data.Result\r\nimport com.example.hifive.databinding.ActivityLoginBinding\r\nimport com.example.hifive.login.LoggedInUserView\r\nimport com.example.hifive.login.LoginViewModel\r\nimport com.example.hifive.login.LoginViewModelFactory\r\nimport com.example.hifive.ui.base.BaseActivity\r\n\r\nclass LoginActivity : BaseActivity<ActivityLoginBinding>(ActivityLoginBinding::inflate) {\r\n    private lateinit var loginViewModel: LoginViewModel\r\n    override fun onCreate(savedInstanceState: Bundle?) {\r\n        super.onCreate(savedInstanceState)\r\n\r\n        initComponents()\r\n        initObservers()\r\n\r\n        val username = binding.username\r\n        val password = binding.password\r\n        val login = binding.login\r\n        val loading = binding.loading\r\n\r\n        loginViewModel = ViewModelProvider(this, LoginViewModelFactory())\r\n            .get(LoginViewModel::class.java)\r\n\r\n        loginViewModel.loginFormState.observe(this@LoginActivity, Observer {\r\n            val loginState = it ?: return@Observer\r\n\r\n            // disable login button unless both username / password is valid\r\n            login.isEnabled = loginState.isDataValid\r\n\r\n            if (loginState.usernameError != null) {\r\n                username.error = getString(loginState.usernameError)\r\n            }\r\n            if (loginState.passwordError != null) {\r\n                password.error = getString(loginState.passwordError)\r\n            }\r\n        })\r\n\r\n        loginViewModel.loginResult.observe(this@LoginActivity, Observer {\r\n            val loginResult = it ?: return@Observer\r\n\r\n            loading.visibility = View.GONE\r\n            if (loginResult.error != null) {\r\n                showLoginFailed(loginResult.error)\r\n            }\r\n            if (loginResult.success != null) {\r\n                updateUiWithUser(loginResult.success)\r\n            }\r\n            setResult(RESULT_OK)\r\n\r\n            //Complete and destroy login activity once successful\r\n        })\r\n\r\n        username.afterTextChanged {\r\n            loginViewModel.loginDataChanged(\r\n                username.text.toString(),\r\n                password.text.toString()\r\n            )\r\n        }\r\n\r\n        password.apply {\r\n            afterTextChanged {\r\n                loginViewModel.loginDataChanged(\r\n                    username.text.toString(),\r\n                    password.text.toString()\r\n                )\r\n            }\r\n\r\n            setOnEditorActionListener { _, actionId, _ ->\r\n                when (actionId) {\r\n                    EditorInfo.IME_ACTION_DONE ->\r\n                        loginViewModel.login(\r\n                            username.text.toString(),\r\n                            password.text.toString()\r\n                        )\r\n                }\r\n                false\r\n            }\r\n\r\n            login.setOnClickListener {\r\n                loading.visibility = View.VISIBLE\r\n                val result = loginViewModel.login(username.text.toString(), password.text.toString())\r\n\r\n\r\n                if(result is Result.Success) {\r\n                    // input clear\r\n                    username.text = null\r\n                    password.text = null\r\n\r\n                    val bundle = Bundle().apply {\r\n                        putString(\"id\", result.data.userId)\r\n                        putString(\"name\", result.data.displayName)\r\n                    }\r\n\r\n                    val intent: Intent = Intent(this@LoginActivity, MainActivity::class.java)\r\n                    intent.putExtra(\"user\", bundle)\r\n                    startActivity(intent)\r\n                } else{\r\n\r\n                }\r\n            }\r\n        }\r\n        //\r\n        binding.signin.setOnClickListener {\r\n            val intent: Intent = Intent(this, SignupActivity::class.java) //error\r\n            startActivity(intent)\r\n        }\r\n\r\n        binding.findButton.setOnClickListener {\r\n            val intent: Intent = Intent(this, findIDPWActivity::class.java) //error\r\n            startActivity(intent)\r\n        }\r\n        //\r\n    }\r\n\r\n    private var backPressedTime: Long = 0\r\n    private val BACK_KEY_TIME_INTERVAL: Long = 2000 // 2초\r\n\r\n    override fun onBackPressed() {\r\n        if (backPressedTime + BACK_KEY_TIME_INTERVAL > System.currentTimeMillis()) {\r\n            super.onBackPressed()\r\n            finishAffinity() // 앱의 모든 엑티비티 종료\r\n        } else {\r\n            Toast.makeText(this, \"뒤로 가기 버튼을 한 번 더 누르면 종료됩니다.\", Toast.LENGTH_SHORT).show()\r\n        }\r\n        backPressedTime = System.currentTimeMillis()\r\n    }\r\n\r\n    // Init components\r\n    private fun initComponents() = with(binding) {\r\n\r\n    }\r\n\r\n    private fun initObservers() {\r\n\r\n    }\r\n\r\n    companion object {\r\n        private const val tag = \"LoginActivity\"\r\n    }\r\n\r\n    private fun updateUiWithUser(model: LoggedInUserView) {\r\n        val welcome = getString(R.string.welcome)\r\n        val displayName = model.displayName\r\n        // TODO : initiate successful logged in experience\r\n        Toast.makeText(\r\n            applicationContext,\r\n            \"$welcome $displayName\",\r\n            Toast.LENGTH_LONG\r\n        ).show()\r\n    }\r\n\r\n    private fun showLoginFailed(@StringRes errorString: Int) {\r\n        Toast.makeText(applicationContext, errorString, Toast.LENGTH_SHORT).show()\r\n    }\r\n}\r\n\r\nfun EditText.afterTextChanged(afterTextChanged: (String) -> Unit) {\r\n    this.addTextChangedListener(object : TextWatcher {\r\n        override fun afterTextChanged(editable: Editable?) {\r\n            afterTextChanged.invoke(editable.toString())\r\n        }\r\n\r\n        override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}\r\n\r\n        override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {}\r\n    })\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/example/hifive/ui/activity/LoginActivity.kt b/app/src/main/java/com/example/hifive/ui/activity/LoginActivity.kt
+--- a/app/src/main/java/com/example/hifive/ui/activity/LoginActivity.kt	(revision 3620ea1a694ce806681b46357d3f5330d3af9b8e)
++++ b/app/src/main/java/com/example/hifive/ui/activity/LoginActivity.kt	(date 1684479924515)
+@@ -1,6 +1,5 @@
+ package com.example.hifive.ui.activity
+ 
+-import android.app.Activity
+ import android.content.Intent
+ import android.os.Bundle
+ import android.text.Editable
+@@ -13,13 +12,17 @@
+ import androidx.annotation.StringRes
+ import androidx.lifecycle.Observer
+ import androidx.lifecycle.ViewModelProvider
++import androidx.lifecycle.lifecycleScope
+ import com.example.hifive.R
+ import com.example.hifive.data.Result
++import com.example.hifive.data.RetrofitClient
+ import com.example.hifive.databinding.ActivityLoginBinding
+ import com.example.hifive.login.LoggedInUserView
+ import com.example.hifive.login.LoginViewModel
+ import com.example.hifive.login.LoginViewModelFactory
+ import com.example.hifive.ui.base.BaseActivity
++import kotlinx.coroutines.launch
++import java.security.MessageDigest
+ 
+ class LoginActivity : BaseActivity<ActivityLoginBinding>(ActivityLoginBinding::inflate) {
+     private lateinit var loginViewModel: LoginViewModel
+@@ -83,35 +86,39 @@
+ 
+             setOnEditorActionListener { _, actionId, _ ->
+                 when (actionId) {
+-                    EditorInfo.IME_ACTION_DONE ->
++                    EditorInfo.IME_ACTION_DONE -> lifecycleScope.launch {
+                         loginViewModel.login(
+                             username.text.toString(),
+                             password.text.toString()
+                         )
++                    }
+                 }
+                 false
+             }
+ 
+             login.setOnClickListener {
+                 loading.visibility = View.VISIBLE
+-                val result = loginViewModel.login(username.text.toString(), password.text.toString())
++                lifecycleScope.launch {
++                    val result =
++                        loginViewModel.login(username.text.toString(), password.text.toString())
+ 
+ 
+-                if(result is Result.Success) {
+-                    // input clear
+-                    username.text = null
+-                    password.text = null
++                    if (result is Result.Success) {
++                        // input clear
++                        username.text = null
++                        password.text = null
+ 
+-                    val bundle = Bundle().apply {
+-                        putString("id", result.data.userId)
+-                        putString("name", result.data.displayName)
+-                    }
+-
+-                    val intent: Intent = Intent(this@LoginActivity, MainActivity::class.java)
+-                    intent.putExtra("user", bundle)
+-                    startActivity(intent)
+-                } else{
++                        val bundle = Bundle().apply {
++                            putString("id", result.data.userId)
++                            putString("name", result.data.displayName)
++                        }
++                        //조건 필요
++                        val intent: Intent = Intent(this@LoginActivity, MainActivity::class.java)
++                        intent.putExtra("user", bundle)
++                        startActivity(intent)
++                    } else {
+ 
++                    }
+                 }
+             }
+         }
+@@ -168,6 +175,8 @@
+     private fun showLoginFailed(@StringRes errorString: Int) {
+         Toast.makeText(applicationContext, errorString, Toast.LENGTH_SHORT).show()
+     }
++
++
+ }
+ 
+ fun EditText.afterTextChanged(afterTextChanged: (String) -> Unit) {
+Index: app/src/main/java/com/example/hifive/ui/activity/MonthlyListActivity.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.example.hifive.ui.activity\r\n\r\nimport androidx.appcompat.app.AppCompatActivity\r\nimport android.os.Bundle\r\nimport android.util.Log\r\nimport android.view.Gravity\r\nimport android.widget.TableLayout\r\nimport android.widget.TableRow\r\nimport android.widget.TextView\r\nimport android.widget.Toast\r\nimport androidx.core.view.isNotEmpty\r\nimport com.example.hifive.R\r\nimport com.example.hifive.data.RetrofitClient\r\nimport com.example.hifive.data.model.SpentListRequest\r\nimport com.example.hifive.databinding.ActivityMonthlyListBinding\r\nimport kotlinx.coroutines.CoroutineScope\r\nimport kotlinx.coroutines.Dispatchers\r\nimport kotlinx.coroutines.launch\r\nimport java.util.*\r\n\r\n\r\nclass MonthlyListActivity : AppCompatActivity() {\r\n    private var bundle: Bundle? = null\r\n    private val cal = Calendar.getInstance()\r\n    private var year = cal.get(Calendar.YEAR)\r\n    private var month = cal.get(Calendar.MONTH) + 1\r\n\r\n    override fun onCreate(savedInstanceState: Bundle?) {\r\n        super.onCreate(savedInstanceState)\r\n        // bundle data 호출\r\n        bundle = intent.extras?.getBundle(\"user\")\r\n        Log.d(\"bundle data(monthly)\", \"${bundle?.getString(\"id\")}\")\r\n\r\n        val binding = ActivityMonthlyListBinding.inflate(layoutInflater)\r\n        setContentView(binding.root)\r\n\r\n        //Log.d(\"date\", \"${year} + ${month} + ${cal.get(Calendar.DATE)}\")\r\n        // initcomponent\r\n        binding.month.text = year.toString()+\"년 \"+month+\"월\"\r\n        loadTable()\r\n\r\n        // 이전달 호출\r\n        binding.prevMonth.setOnClickListener {\r\n            //text view editing\r\n            if(month == 1){\r\n                month = 12\r\n                year--\r\n            }\r\n            else{\r\n                month--\r\n            }\r\n            binding.month.text = year.toString()+\"년 \"+month+\"월\"\r\n\r\n            //load fun\r\n            try {\r\n                loadTable()\r\n            } catch (e : Exception){\r\n                Log.e(\"error\", \"${e.message}\")\r\n            }\r\n        }\r\n\r\n        // 다음달 호출\r\n        binding.nextMoth.setOnClickListener {\r\n            // 현재 날짜를 넘지 않는 경우\r\n            if(year!=cal.get(Calendar.YEAR) || month!=cal.get(Calendar.MONTH)+1) {\r\n                if (month == 12) {\r\n                    month = 1\r\n                    year++\r\n                } else {\r\n                    month++\r\n                }\r\n                loadTable()\r\n            }\r\n            else{ // 현재 날짜를 넘는 경우\r\n                Toast.makeText(this, \"마지막 페이지 입니다.\", Toast.LENGTH_SHORT).show()\r\n            }\r\n            binding.month.text = year.toString()+\"년 \"+month+\"월\"\r\n\r\n        }\r\n    }\r\n\r\n    fun loadTable(){\r\n\r\n\r\n//월별 데이터 값 가져오기\r\n        //todo add load data, input year, month\r\n        CoroutineScope(Dispatchers.IO).launch {\r\n            // total 설정\r\n            val total = findViewById<TextView>(R.id.total)\r\n            //total.text\r\n\r\n// TableLayout 가져오기\r\n            val tableLayout = findViewById<TableLayout>(R.id.table)\r\n            if(tableLayout.isNotEmpty())\r\n                tableLayout.removeAllViews()\r\n\r\n            //total text 초기화\r\n            launch(Dispatchers.Main) {\r\n                total.text = \"${0}\"\r\n            }\r\n\r\n            // 서버 호출\r\n            val paylistresponse = RetrofitClient.requestMonthData(SpentListRequest(\"${bundle?.getString(\"id\")}\",\r\n                \"${year}\", \"${month}\")\r\n            )\r\n\r\n            if (paylistresponse != null) {\r\n                Log.d(\"load list\",\"${paylistresponse != null} / ${paylistresponse.success == true} / ${paylistresponse.data.size}\")\r\n            }\r\n\r\n            // 리스트 출력\r\n            if (paylistresponse != null && paylistresponse.success == true && paylistresponse.data.size != 0){\r\n                launch(Dispatchers.Main) {\r\n                    total.text = \"${paylistresponse.total}\"\r\n                }\r\n                val dataList = paylistresponse.data\r\n\r\n                for (i in 0..dataList.size-1){\r\n                    val row = TableRow(this@MonthlyListActivity)\r\n                    row.layoutParams = TableRow.LayoutParams(\r\n                        TableRow.LayoutParams.WRAP_CONTENT,\r\n                        TableRow.LayoutParams.WRAP_CONTENT\r\n                    )\r\n\r\n                    // 순번\r\n                    val text1 = TextView(this@MonthlyListActivity)\r\n                    text1.text = \"${i+1}\"\r\n                    text1.setPadding(5, 5, 5, 5)\r\n                    row.addView(text1)\r\n\r\n                    // 승차\r\n                    val text2 = TextView(this@MonthlyListActivity)\r\n                    text2.text = \"${dataList[i].date}\"\r\n                    text2.setPadding(5, 5, 5, 5)\r\n                    row.addView(text2)\r\n\r\n                    // 하차\r\n                    val text3 = TextView(this@MonthlyListActivity)\r\n                    text3.text = \"${\"\"}\"\r\n                    text3.setPadding(5, 5, 5, 5)\r\n                    row.addView(text3)\r\n\r\n                    // 카드\r\n                    val text4 = TextView(this@MonthlyListActivity)\r\n                    text4.text = \"${dataList[i].card}\"\r\n                    text4.setPadding(5, 5, 5, 5)\r\n                    row.addView(text4)\r\n\r\n                    // 결제금액\r\n                    val text5 = TextView(this@MonthlyListActivity)\r\n                    text5.text = \"${dataList[i].fee}원\"\r\n                    text5.setPadding(5, 5, 5, 5)\r\n                    row.addView(text5)\r\n\r\n                    launch(Dispatchers.Main) {\r\n                        tableLayout.addView(row)\r\n                    }\r\n                }\r\n            }\r\n        }\r\n    }\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/example/hifive/ui/activity/MonthlyListActivity.kt b/app/src/main/java/com/example/hifive/ui/activity/MonthlyListActivity.kt
+--- a/app/src/main/java/com/example/hifive/ui/activity/MonthlyListActivity.kt	(revision 3620ea1a694ce806681b46357d3f5330d3af9b8e)
++++ b/app/src/main/java/com/example/hifive/ui/activity/MonthlyListActivity.kt	(date 1684313011602)
+@@ -136,13 +136,13 @@
+ 
+                     // 하차
+                     val text3 = TextView(this@MonthlyListActivity)
+-                    text3.text = "${""}"
++                    text3.text = "${dataList[i].quit}"
+                     text3.setPadding(5, 5, 5, 5)
+                     row.addView(text3)
+ 
+                     // 카드
+                     val text4 = TextView(this@MonthlyListActivity)
+-                    text4.text = "${dataList[i].card}"
++                    text4.text = "${dataList[i].card_name}"
+                     text4.setPadding(5, 5, 5, 5)
+                     row.addView(text4)
+ 
+Index: app/src/main/java/com/example/hifive/data/model/SpenLIstResponse.kt
+===================================================================
+diff --git a/app/src/main/java/com/example/hifive/data/model/SpenLIstResponse.kt b/app/src/main/java/com/example/hifive/data/model/SpenLIstResponse.kt
+deleted file mode 100644
+--- a/app/src/main/java/com/example/hifive/data/model/SpenLIstResponse.kt	(revision 3620ea1a694ce806681b46357d3f5330d3af9b8e)
++++ /dev/null	(revision 3620ea1a694ce806681b46357d3f5330d3af9b8e)
+@@ -1,9 +0,0 @@
+-package com.example.hifive.data.model
+-
+-data class SpenLIstResponse(
+-    val no : Int,
+-    val date : String,
+-    val riding : String,
+-    val stopover : String,
+-    val money: Int
+-)
+Index: .idea/.gitignore
+===================================================================
+diff --git a/.idea/.gitignore b/.idea/.gitignore
+deleted file mode 100644
+--- a/.idea/.gitignore	(revision 3620ea1a694ce806681b46357d3f5330d3af9b8e)
++++ /dev/null	(revision 3620ea1a694ce806681b46357d3f5330d3af9b8e)
+@@ -1,3 +0,0 @@
+-# Default ignored files
+-/shelf/
+-/workspace.xml
+Index: app/src/main/java/com/example/hifive/data/model/PayData.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.example.hifive.data.model\r\n\r\nimport java.time.LocalDateTime\r\nimport java.util.Date\r\n\r\ndata class PayData(\r\n    val date: String,\r\n    val fee: String,\r\n    val card: String\r\n    )\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/example/hifive/data/model/PayData.kt b/app/src/main/java/com/example/hifive/data/model/PayData.kt
+--- a/app/src/main/java/com/example/hifive/data/model/PayData.kt	(revision 3620ea1a694ce806681b46357d3f5330d3af9b8e)
++++ b/app/src/main/java/com/example/hifive/data/model/PayData.kt	(date 1684312994868)
+@@ -5,6 +5,7 @@
+ 
+ data class PayData(
+     val date: String,
++    val quit:String,
+     val fee: String,
+-    val card: String
++    val card_name: String
+     )
+Index: app/src/main/java/com/example/hifive/data/model/AuthRequest.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/example/hifive/data/model/AuthRequest.kt b/app/src/main/java/com/example/hifive/data/model/AuthRequest.kt
+new file mode 100644
+--- /dev/null	(date 1684476784492)
++++ b/app/src/main/java/com/example/hifive/data/model/AuthRequest.kt	(date 1684476784492)
+@@ -0,0 +1,5 @@
++package com.example.hifive.data.model
++
++data class AuthRequest(
++    val email: String
++)
+Index: app/src/main/java/com/example/hifive/data/model/AuthVerifyRequest.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/example/hifive/data/model/AuthVerifyRequest.kt b/app/src/main/java/com/example/hifive/data/model/AuthVerifyRequest.kt
+new file mode 100644
+--- /dev/null	(date 1683471828000)
++++ b/app/src/main/java/com/example/hifive/data/model/AuthVerifyRequest.kt	(date 1683471828000)
+@@ -0,0 +1,6 @@
++package com.example.hifive.data.model
++
++data class AuthVerifyRequest(
++    val email: String,
++    val auth_number : String
++)
+Index: app/src/main/java/com/example/hifive/data/LoginDataSource.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.example.hifive.data\r\n\r\nimport android.util.Log\r\nimport com.example.hifive.data.model.LoggedInUser\r\nimport com.example.hifive.data.model.LoginRequest\r\nimport com.example.hifive.data.model.LoginResponse\r\nimport com.example.hifive.ui.activity.LoginActivity\r\nimport com.example.hifive.ui.activity.findIDPWActivity\r\nimport kotlinx.coroutines.CoroutineScope\r\nimport kotlinx.coroutines.Dispatchers\r\nimport kotlinx.coroutines.async\r\nimport java.io.IOException\r\n\r\n/**\r\n * Class that handles authentication w/ login credentials and retrieves user information.\r\n */\r\nclass LoginDataSource {\r\n\r\n    fun login(username: String, password: String): Result<LoggedInUser> {\r\n        try {\r\n            // TODO: 오류 수정\r\n            //error null\r\n            val response = RetrofitClient.login(LoginRequest(username, password))\r\n\r\n            Log.d(\"response\", \"${response?.success}\"+\" / \"+\"${response.toString()}\")\r\n            //if(response?.success == true) {\r\n            if(true) {\r\n                val user = LoggedInUser(\"${username}\", \"${username}\")\r\n                return Result.Success(user)\r\n            } else{\r\n                return Result.Error(Exception(\"로그인 오류\"))\r\n            }\r\n        } catch (e: Throwable) {\r\n            return Result.Error(IOException(\"Error logging in\", e))\r\n        }\r\n    }\r\n\r\n    fun logout() {\r\n        // TODO: revoke authentication\r\n    }\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/example/hifive/data/LoginDataSource.kt b/app/src/main/java/com/example/hifive/data/LoginDataSource.kt
+--- a/app/src/main/java/com/example/hifive/data/LoginDataSource.kt	(revision 3620ea1a694ce806681b46357d3f5330d3af9b8e)
++++ b/app/src/main/java/com/example/hifive/data/LoginDataSource.kt	(date 1684344219268)
+@@ -3,31 +3,28 @@
+ import android.util.Log
+ import com.example.hifive.data.model.LoggedInUser
+ import com.example.hifive.data.model.LoginRequest
+-import com.example.hifive.data.model.LoginResponse
+-import com.example.hifive.ui.activity.LoginActivity
+-import com.example.hifive.ui.activity.findIDPWActivity
+-import kotlinx.coroutines.CoroutineScope
+-import kotlinx.coroutines.Dispatchers
+-import kotlinx.coroutines.async
++import kotlinx.coroutines.awaitAll
+ import java.io.IOException
++import java.security.MessageDigest
+ 
+ /**
+  * Class that handles authentication w/ login credentials and retrieves user information.
+  */
+ class LoginDataSource {
+ 
+-    fun login(username: String, password: String): Result<LoggedInUser> {
++    suspend fun login(username: String, password: String): Result<LoggedInUser> {
+         try {
+             // TODO: 오류 수정
+             //error null
+-            val response = RetrofitClient.login(LoginRequest(username, password))
+-
+-            Log.d("response", "${response?.success}"+" / "+"${response.toString()}")
+-            //if(response?.success == true) {
+-            if(true) {
+-                val user = LoggedInUser("${username}", "${username}")
+-                return Result.Success(user)
+-            } else{
++            val response = RetrofitClient.login(LoginRequest(username, encrypt(password)))
++            if(response !== null) {
++                if (response?.success==true) {
++                    val user = LoggedInUser("${username}", "${username}")
++                    return Result.Success(user)
++                } else {
++                    return Result.Error(Exception("로그인 오류"))
++                }
++            }else{
+                 return Result.Error(Exception("로그인 오류"))
+             }
+         } catch (e: Throwable) {
+@@ -35,6 +32,12 @@
+         }
+     }
+ 
++    //비밀번호 암호화
++    private fun encrypt(input: String): String {
++        val bytes = MessageDigest.getInstance("MD5").digest(input.toByteArray(Charsets.UTF_8))
++        return bytes.joinToString("") { "%02x".format(it) }
++    }
++
+     fun logout() {
+         // TODO: revoke authentication
+     }
+Index: app/src/main/java/com/example/hifive/ui/activity/SignupActivity.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.example.hifive.ui.activity\r\n\r\nimport android.content.Intent\r\nimport androidx.appcompat.app.AppCompatActivity\r\nimport android.os.Bundle\r\nimport android.widget.Toast\r\nimport com.example.hifive.data.RetrofitClient\r\nimport com.example.hifive.data.model.RegisterRequest\r\nimport com.example.hifive.databinding.ActivitySignupBinding\r\nimport kotlinx.coroutines.CoroutineScope\r\nimport kotlinx.coroutines.Dispatchers\r\nimport kotlinx.coroutines.launch\r\nimport kotlinx.coroutines.withContext\r\nimport java.security.MessageDigest\r\n\r\nclass SignupActivity : AppCompatActivity() {\r\n    override fun onCreate(savedInstanceState: Bundle?) {\r\n        super.onCreate(savedInstanceState)\r\n        val binding = ActivitySignupBinding.inflate(layoutInflater)\r\n        setContentView(binding.root)\r\n        var intent: Intent\r\n\r\n\r\n        binding.sendButton.setOnClickListener {\r\n            //인증번호 전송 action\r\n            //todo - 서버 테스트\r\n            binding.sendButton.text = \"재전송\"\r\n            binding.verifyButton.isEnabled = true\r\n            binding.verifyNumber.isEnabled = true\r\n\r\n            val name = binding.name.text.toString()\r\n            val phone = binding.phone.text.toString()\r\n\r\n            RetrofitClient.requestAuth(this@SignupActivity, name, phone)\r\n        }\r\n\r\n        // 본인인증\r\n        binding.verifyButton.setOnClickListener {\r\n            //인증번호 검증 action\r\n            if(true) {\r\n                binding.signIn.isEnabled = true\r\n                binding.EmailAddress.isEnabled = true\r\n                binding.Password.isEnabled = true\r\n                binding.Password2.isEnabled = true\r\n            }\r\n        }\r\n\r\n        binding.signIn.setOnClickListener {\r\n            val email = binding.EmailAddress.text.toString()\r\n            val pwd = binding.Password.text.toString()\r\n            val pwd2 = binding.Password2.text.toString()\r\n            val name = binding.name.text.toString()\r\n            val phone = \"${binding.phone.text}\"\r\n\r\n            if(isValid(email, pwd, pwd2, name, phone)) {\r\n                CoroutineScope(Dispatchers.IO).launch {\r\n                    var message = \"회원가입 실패\"\r\n                    if (RetrofitClient.signUp(this@SignupActivity, RegisterRequest(email, encrypt(pwd), name, phone))) {\r\n                        message = \"회원가입 성공\"\r\n                        finish()\r\n                    }\r\n                    withContext(Dispatchers.Main) {\r\n                        Toast.makeText(this@SignupActivity, \"${message}\", Toast.LENGTH_LONG).show()\r\n                    }\r\n                }\r\n            }\r\n        }\r\n    }\r\n\r\n    fun isValid(email:String, pwd:String, pwd2:String, name:String, phone:String): Boolean{\r\n        var valid: Boolean = false\r\n        if(email.isNotBlank() && pwd.isNotBlank() && name.isNotBlank() && phone.length>=10){\r\n            if(pwd.equals(pwd2)){\r\n                valid = true\r\n            } else{\r\n                Toast.makeText(this@SignupActivity, \"비밀번호가 일치하지 않습니다\", Toast.LENGTH_SHORT).show()\r\n            }\r\n        } else{\r\n            Toast.makeText(this@SignupActivity, \"빈칸을 작성해 주세요\", Toast.LENGTH_SHORT).show()\r\n        }\r\n        return valid\r\n    }\r\n\r\n    fun encrypt(input: String): String {\r\n        val bytes = MessageDigest.getInstance(\"MD5\").digest(input.toByteArray(Charsets.UTF_8))\r\n        return bytes.joinToString(\"\") { \"%02x\".format(it) }\r\n    }\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/example/hifive/ui/activity/SignupActivity.kt b/app/src/main/java/com/example/hifive/ui/activity/SignupActivity.kt
+--- a/app/src/main/java/com/example/hifive/ui/activity/SignupActivity.kt	(revision 3620ea1a694ce806681b46357d3f5330d3af9b8e)
++++ b/app/src/main/java/com/example/hifive/ui/activity/SignupActivity.kt	(date 1684488262206)
+@@ -1,9 +1,15 @@
+ package com.example.hifive.ui.activity
+ 
++import android.app.AlertDialog
++import android.app.DatePickerDialog
++import android.content.Context
+ import android.content.Intent
+ import androidx.appcompat.app.AppCompatActivity
+ import android.os.Bundle
++import android.util.Log
++import android.widget.EditText
+ import android.widget.Toast
++import androidx.core.view.isVisible
+ import com.example.hifive.data.RetrofitClient
+ import com.example.hifive.data.model.RegisterRequest
+ import com.example.hifive.databinding.ActivitySignupBinding
+@@ -12,6 +18,7 @@
+ import kotlinx.coroutines.launch
+ import kotlinx.coroutines.withContext
+ import java.security.MessageDigest
++import java.util.*
+ 
+ class SignupActivity : AppCompatActivity() {
+     override fun onCreate(savedInstanceState: Bundle?) {
+@@ -20,42 +27,112 @@
+         setContentView(binding.root)
+         var intent: Intent
+ 
++        // 날짜 입력 버튼
++        binding.inputDateButton.setOnClickListener(){
++            showDatePickerDialog(this@SignupActivity, binding.birth)
++        }
+ 
++        // 인증번호 전송 버튼
+         binding.sendButton.setOnClickListener {
+             //인증번호 전송 action
+             //todo - 서버 테스트
+-            binding.sendButton.text = "재전송"
+-            binding.verifyButton.isEnabled = true
+-            binding.verifyNumber.isEnabled = true
+-
+-            val name = binding.name.text.toString()
+-            val phone = binding.phone.text.toString()
+-
+-            RetrofitClient.requestAuth(this@SignupActivity, name, phone)
++            val name = binding.name.text.toString()
++            //val phone = binding.phone.text.toString()
++            val email = binding.EmailAddress.text.toString()
++            val birthday = binding.birth.text.toString()
++            Log.d("날짜 확인","$birthday");
++
++            if(sendValid(name, birthday, email)) {
++                CoroutineScope(Dispatchers.IO).launch {
++                    val result = RetrofitClient.requestAuth(email)
++                    Log.d("result", "${result}")
++                    var success = false
++                    if (result != null) {
++                        launch(Dispatchers.Main) {
++                            showDialog(this@SignupActivity, "${result.message}")
++                        }
++                        success = result.success
++                    } else{
++                        launch(Dispatchers.Main) {
++                            showDialog(this@SignupActivity, "요청 실패(NULL)")
++                        }
++                    }
++
++                    if(success){
++                        launch(Dispatchers.Main) {
++                            binding.sendButton.text = "재전송"
++                            binding.verifyButton.isEnabled = true
++                            binding.verifyNumber.isEnabled = true
++                        }
++                    }
++                }
++            }
+         }
+ 
+-        // 본인인증
++        // todo server test
++        // 인증번호 검증 버튼(본인인증)
+         binding.verifyButton.setOnClickListener {
+             //인증번호 검증 action
+-            if(true) {
+-                binding.signIn.isEnabled = true
+-                binding.EmailAddress.isEnabled = true
+-                binding.Password.isEnabled = true
+-                binding.Password2.isEnabled = true
++            val email = "${binding.EmailAddress.text}"
++            val verify = "${binding.verifyNumber.text}"
++
++            CoroutineScope(Dispatchers.IO).launch {
++                val result = RetrofitClient.requestVerify(email, verify)
++                var success = false
++                var message = ""
++
++                if(result != null){
++                    success = result.success
++                    message = result.message
++                }
++
++                if (success) {
++                    // 검증 성공시
++                    launch(Dispatchers.Main) {
++                        binding.signIn.isEnabled = true
++                        binding.id.isEnabled = true
++                        binding.Password.isEnabled = true
++                        binding.Password2.isEnabled = true
++                        binding.signIn.isVisible = true
++                        binding.id.isVisible = true
++                        binding.Password.isVisible = true
++                        binding.Password2.isVisible = true
++
++                        binding.inputDateButton.isEnabled = false
++                        //binding.phone.isEnabled = false
++                        binding.name.isEnabled = false
++                        binding.EmailAddress.isEnabled = false
++                        binding.verifyNumber.isEnabled = false
++                        binding.verifyButton.isEnabled = false
++                        binding.sendButton.isEnabled = false
++
++                        showDialog(this@SignupActivity, "${message}")
++                    }
++                } else {
++                    // 검증 실패시
++                    launch(Dispatchers.Main) {
++                        showDialog(this@SignupActivity, "${message}")
++                    }
++                }
+             }
+         }
+ 
++        // todo 회원가입 코드 수정
++        // 회원가입 버튼
+         binding.signIn.setOnClickListener {
++            val id = binding.id.text.toString()
+             val email = binding.EmailAddress.text.toString()
+             val pwd = binding.Password.text.toString()
+             val pwd2 = binding.Password2.text.toString()
+             val name = binding.name.text.toString()
+-            val phone = "${binding.phone.text}"
++            //val phone = "${binding.phone.text}"
++            val birth = "${binding.birth.text}"
+ 
+-            if(isValid(email, pwd, pwd2, name, phone)) {
++
++            if(isValid(id, pwd, pwd2)) {
+                 CoroutineScope(Dispatchers.IO).launch {
+                     var message = "회원가입 실패"
+-                    if (RetrofitClient.signUp(this@SignupActivity, RegisterRequest(email, encrypt(pwd), name, phone))) {
++                    if (RetrofitClient.signUp(this@SignupActivity, RegisterRequest(id, encrypt(pwd),email, name,birth, certification = true))) {
+                         message = "회원가입 성공"
+                         finish()
+                     }
+@@ -67,22 +144,106 @@
+         }
+     }
+ 
+-    fun isValid(email:String, pwd:String, pwd2:String, name:String, phone:String): Boolean{
++    // name, phone, email 유효값 확인
++    private fun sendValid(name: String, birth: String, email: String): Boolean{
+         var valid: Boolean = false
+-        if(email.isNotBlank() && pwd.isNotBlank() && name.isNotBlank() && phone.length>=10){
++        // 이름 확인
++        if(name.isNotBlank()){
++            valid = true
++        } else{
++            showDialog(this@SignupActivity, "이름을 입력해주세요.")
++            return false
++        }
++
++        if(birth.isNotBlank()){
++            valid = true
++        } else{
++            showDialog(this@SignupActivity, "생년월일을 입력해주세요.")
++            return false
++        }
++
++        // 휴대전화 형식 확인
++//        val phoneRegex = Regex("^010[0-9]{7,8}$")
++//        if(phone.matches(phoneRegex)){
++//            valid = true
++//        } else{
++//            showDialog(this@SignupActivity, "휴대폰 형식에 맞지 않습니다.")
++//            return false
++//        }
++
++        // 이메일 형식 확인
++        val emailRegex = Regex("[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}")
++        Log.d("email match","${emailRegex}, ${email}, ${email.matches(emailRegex)}")
++        if(email.matches(emailRegex)){
++            valid = true
++        } else{
++            showDialog(this@SignupActivity, "이메일 형식에 맞지 않습니다.")
++            return false
++        }
++
++        return valid
++    }
++
++    // id, pwq 유효값 확인
++    private fun isValid(id: String, pwd:String, pwd2:String): Boolean{
++        var valid: Boolean = false
++
++        if(id.isNotBlank()){
++            valid = true
++        } else{
++            showDialog(this@SignupActivity, "아이디를 입력해주세요.")
++            return false
++        }
++
++        if(pwd.isNotBlank()){
+             if(pwd.equals(pwd2)){
+                 valid = true
+             } else{
+-                Toast.makeText(this@SignupActivity, "비밀번호가 일치하지 않습니다", Toast.LENGTH_SHORT).show()
++                showDialog(this@SignupActivity, "비밀번호가 일치하지 않습니다.")
++                return false
+             }
+         } else{
+-            Toast.makeText(this@SignupActivity, "빈칸을 작성해 주세요", Toast.LENGTH_SHORT).show()
++            showDialog(this@SignupActivity, "비밀번호를 입력해 주세요.")
++            return false
+         }
++
+         return valid
+     }
+ 
+-    fun encrypt(input: String): String {
++    private fun encrypt(input: String): String {
+         val bytes = MessageDigest.getInstance("MD5").digest(input.toByteArray(Charsets.UTF_8))
+         return bytes.joinToString("") { "%02x".format(it) }
+     }
++
++    // 다이얼로그
++    private fun showDialog(context: Context, message: String) {
++        val builder = AlertDialog.Builder(context)
++        builder.setMessage(message)
++        builder.setPositiveButton("확인") { dialog, _ ->
++            // 확인 버튼을 눌렀을 때 수행할 동작
++            dialog.dismiss() // 다이얼로그 닫기
++        }
++        builder.create().show()
++    }
++
++    // 날짜 입력 다이얼로그
++    private fun showDatePickerDialog(context: Context, editText: EditText) {
++        val calendar = Calendar.getInstance()
++        val currentYear = calendar.get(Calendar.YEAR)
++        val currentMonth = calendar.get(Calendar.MONTH)
++        val currentDay = calendar.get(Calendar.DAY_OF_MONTH)
++
++        val datePickerDialog = DatePickerDialog(
++            context,
++            { _, year, month, dayOfMonth ->
++                val selectedDate = String.format("%04d%02d%02d", year, month + 1, dayOfMonth)
++                editText.setText(selectedDate)
++            },
++            currentYear,
++            currentMonth,
++            currentDay
++        )
++
++        datePickerDialog.show()
++    }
+ }
+\ No newline at end of file
+Index: app/src/main/java/com/example/hifive/data/LoginRepository.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.example.hifive.data\r\n\r\nimport com.example.hifive.data.model.LoggedInUser\r\n\r\n/**\r\n * Class that requests authentication and user information from the remote data source and\r\n * maintains an in-memory cache of login status and user credentials information.\r\n */\r\n\r\nclass LoginRepository(val dataSource: LoginDataSource) {\r\n\r\n    // in-memory cache of the loggedInUser object\r\n    var user: LoggedInUser? = null\r\n        private set\r\n\r\n    val isLoggedIn: Boolean\r\n        get() = user != null\r\n\r\n    init {\r\n        // If user credentials will be cached in local storage, it is recommended it be encrypted\r\n        // @see https://developer.android.com/training/articles/keystore\r\n        user = null\r\n    }\r\n\r\n    fun logout() {\r\n        user = null\r\n        dataSource.logout()\r\n    }\r\n\r\n    fun login(username: String, password: String): Result<LoggedInUser> {\r\n        // handle login\r\n        val result = dataSource.login(username, password)\r\n\r\n        if (result is Result.Success) {\r\n            setLoggedInUser(result.data)\r\n        }\r\n\r\n        return result\r\n    }\r\n\r\n    private fun setLoggedInUser(loggedInUser: LoggedInUser) {\r\n        this.user = loggedInUser\r\n        // If user credentials will be cached in local storage, it is recommended it be encrypted\r\n        // @see https://developer.android.com/training/articles/keystore\r\n    }\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/example/hifive/data/LoginRepository.kt b/app/src/main/java/com/example/hifive/data/LoginRepository.kt
+--- a/app/src/main/java/com/example/hifive/data/LoginRepository.kt	(revision 3620ea1a694ce806681b46357d3f5330d3af9b8e)
++++ b/app/src/main/java/com/example/hifive/data/LoginRepository.kt	(date 1684309286377)
+@@ -27,7 +27,7 @@
+         dataSource.logout()
+     }
+ 
+-    fun login(username: String, password: String): Result<LoggedInUser> {
++    suspend fun login(username: String, password: String): Result<LoggedInUser> {
+         // handle login
+         val result = dataSource.login(username, password)
+ 
+Index: app/src/main/res/layout/activity_login.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"utf-8\"?>\r\n<layout xmlns:android=\"http://schemas.android.com/apk/res/android\"\r\n    xmlns:app=\"http://schemas.android.com/apk/res-auto\"\r\n    xmlns:tools=\"http://schemas.android.com/tools\">\r\n    <androidx.constraintlayout.widget.ConstraintLayout\r\n        android:id=\"@+id/container\"\r\n        android:layout_width=\"match_parent\"\r\n        android:layout_height=\"match_parent\"\r\n        android:paddingLeft=\"@dimen/activity_horizontal_margin\"\r\n        android:paddingTop=\"@dimen/activity_vertical_margin\"\r\n        android:paddingRight=\"@dimen/activity_horizontal_margin\"\r\n        android:paddingBottom=\"@dimen/activity_vertical_margin\"\r\n        tools:context=\".ui.activity.LoginActivity\">\r\n\r\n        <ProgressBar\r\n            android:id=\"@+id/loading\"\r\n            android:layout_width=\"wrap_content\"\r\n            android:layout_height=\"wrap_content\"\r\n            android:layout_gravity=\"center\"\r\n            android:layout_marginTop=\"100dp\"\r\n            android:visibility=\"gone\"\r\n            app:layout_constraintEnd_toEndOf=\"parent\"\r\n            app:layout_constraintStart_toStartOf=\"parent\"\r\n            app:layout_constraintTop_toTopOf=\"parent\" />\r\n\r\n        <LinearLayout\r\n            android:layout_width=\"match_parent\"\r\n            android:layout_height=\"match_parent\"\r\n            android:orientation=\"vertical\">\r\n\r\n            <ImageView\r\n                android:id=\"@+id/imageView2\"\r\n                android:layout_width=\"match_parent\"\r\n                android:layout_height=\"wrap_content\"\r\n                app:srcCompat=\"@drawable/bg_hifive_logo\" />\r\n\r\n            <LinearLayout\r\n                android:layout_width=\"match_parent\"\r\n                android:layout_height=\"wrap_content\"\r\n                android:orientation=\"horizontal\">\r\n\r\n                <LinearLayout\r\n                    android:layout_width=\"wrap_content\"\r\n                    android:layout_height=\"wrap_content\"\r\n                    android:layout_weight=\"10\"\r\n                    android:orientation=\"vertical\">\r\n\r\n                    <EditText\r\n                        android:id=\"@+id/username\"\r\n                        android:layout_width=\"match_parent\"\r\n                        android:layout_height=\"wrap_content\"\r\n                        android:layout_marginTop=\"96dp\"\r\n                        android:hint=\"@string/prompt_email\"\r\n                        android:inputType=\"textEmailAddress\"\r\n                        android:lines=\"1\"\r\n                        android:selectAllOnFocus=\"true\" />\r\n\r\n                    <EditText\r\n                        android:id=\"@+id/password\"\r\n                        android:layout_width=\"match_parent\"\r\n                        android:layout_height=\"wrap_content\"\r\n                        android:layout_marginTop=\"8dp\"\r\n                        android:hint=\"@string/prompt_password\"\r\n                        android:imeActionLabel=\"@string/action_sign_in_short\"\r\n                        android:imeOptions=\"actionDone\"\r\n                        android:inputType=\"textPassword\"\r\n                        android:lines=\"1\"\r\n                        android:selectAllOnFocus=\"true\" />\r\n                </LinearLayout>\r\n\r\n                <LinearLayout\r\n                    android:layout_width=\"wrap_content\"\r\n                    android:layout_height=\"match_parent\"\r\n                    android:orientation=\"vertical\">\r\n\r\n                    <Button\r\n                        android:id=\"@+id/login\"\r\n                        android:layout_width=\"wrap_content\"\r\n                        android:layout_height=\"match_parent\"\r\n                        android:layout_gravity=\"start\"\r\n                        android:layout_marginTop=\"96dp\"\r\n                        android:layout_marginEnd=\"4dp\"\r\n                        android:enabled=\"false\"\r\n                        android:text=\"로그인\" />\r\n                </LinearLayout>\r\n\r\n            </LinearLayout>\r\n\r\n            <LinearLayout\r\n                android:layout_width=\"match_parent\"\r\n                android:layout_height=\"wrap_content\">\r\n\r\n                <Space\r\n                    android:layout_width=\"wrap_content\"\r\n                    android:layout_height=\"wrap_content\"\r\n                    android:layout_weight=\"1\" />\r\n\r\n                <Button\r\n                    android:id=\"@+id/signin\"\r\n                    android:layout_width=\"wrap_content\"\r\n                    android:layout_height=\"wrap_content\"\r\n                    android:layout_weight=\"1\"\r\n                    android:text=\"회원가입\" />\r\n\r\n                <Space\r\n                    android:layout_width=\"wrap_content\"\r\n                    android:layout_height=\"wrap_content\"\r\n                    android:layout_weight=\"1\" />\r\n\r\n                <Button\r\n                    android:id=\"@+id/findButton\"\r\n                    android:layout_width=\"wrap_content\"\r\n                    android:layout_height=\"wrap_content\"\r\n                    android:layout_weight=\"1\"\r\n                    android:text=\"ID/PW\" />\r\n\r\n                <Space\r\n                    android:layout_width=\"wrap_content\"\r\n                    android:layout_height=\"wrap_content\"\r\n                    android:layout_weight=\"5\" />\r\n            </LinearLayout>\r\n\r\n        </LinearLayout>\r\n\r\n    </androidx.constraintlayout.widget.ConstraintLayout>\r\n</layout>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/res/layout/activity_login.xml b/app/src/main/res/layout/activity_login.xml
+--- a/app/src/main/res/layout/activity_login.xml	(revision 3620ea1a694ce806681b46357d3f5330d3af9b8e)
++++ b/app/src/main/res/layout/activity_login.xml	(date 1683466402000)
+@@ -50,7 +50,7 @@
+                         android:layout_width="match_parent"
+                         android:layout_height="wrap_content"
+                         android:layout_marginTop="96dp"
+-                        android:hint="@string/prompt_email"
++                        android:hint="ID"
+                         android:inputType="textEmailAddress"
+                         android:lines="1"
+                         android:selectAllOnFocus="true" />
+Index: .idea/misc.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<project version=\"4\">\r\n  <component name=\"ExternalStorageConfigurationManager\" enabled=\"true\" />\r\n  <component name=\"ProjectRootManager\" version=\"2\" languageLevel=\"JDK_11\" default=\"true\" project-jdk-name=\"11\" project-jdk-type=\"JavaSDK\">\r\n    <output url=\"file://$PROJECT_DIR$/build/classes\" />\r\n  </component>\r\n  <component name=\"ProjectType\">\r\n    <option name=\"id\" value=\"Android\" />\r\n  </component>\r\n</project>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/misc.xml b/.idea/misc.xml
+--- a/.idea/misc.xml	(revision 3620ea1a694ce806681b46357d3f5330d3af9b8e)
++++ b/.idea/misc.xml	(date 1684723056878)
+@@ -1,7 +1,6 @@
+-<?xml version="1.0" encoding="UTF-8"?>
+ <project version="4">
+   <component name="ExternalStorageConfigurationManager" enabled="true" />
+-  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="11" project-jdk-type="JavaSDK">
++  <component name="ProjectRootManager" version="2" languageLevel="JDK_17" default="true" project-jdk-name="jbr-17" project-jdk-type="JavaSDK">
+     <output url="file://$PROJECT_DIR$/build/classes" />
+   </component>
+   <component name="ProjectType">
+Index: .idea/gradle.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<project version=\"4\">\r\n  <component name=\"GradleMigrationSettings\" migrationVersion=\"1\" />\r\n  <component name=\"GradleSettings\">\r\n    <option name=\"linkedExternalProjectsSettings\">\r\n      <GradleProjectSettings>\r\n        <option name=\"testRunner\" value=\"GRADLE\" />\r\n        <option name=\"distributionType\" value=\"DEFAULT_WRAPPED\" />\r\n        <option name=\"externalProjectPath\" value=\"$PROJECT_DIR$\" />\r\n        <option name=\"gradleJvm\" value=\"11\" />\r\n        <option name=\"modules\">\r\n          <set>\r\n            <option value=\"$PROJECT_DIR$\" />\r\n            <option value=\"$PROJECT_DIR$/app\" />\r\n          </set>\r\n        </option>\r\n      </GradleProjectSettings>\r\n    </option>\r\n  </component>\r\n</project>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/gradle.xml b/.idea/gradle.xml
+--- a/.idea/gradle.xml	(revision 3620ea1a694ce806681b46357d3f5330d3af9b8e)
++++ b/.idea/gradle.xml	(date 1684110673170)
+@@ -7,7 +7,7 @@
+         <option name="testRunner" value="GRADLE" />
+         <option name="distributionType" value="DEFAULT_WRAPPED" />
+         <option name="externalProjectPath" value="$PROJECT_DIR$" />
+-        <option name="gradleJvm" value="11" />
++        <option name="gradleJvm" value="Android Studio java home" />
+         <option name="modules">
+           <set>
+             <option value="$PROJECT_DIR$" />
+Index: .idea/vcs.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<project version=\"4\">\r\n  <component name=\"VcsDirectoryMappings\">\r\n    <mapping directory=\"$PROJECT_DIR$\" vcs=\"Git\" />\r\n  </component>\r\n</project>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/vcs.xml b/.idea/vcs.xml
+--- a/.idea/vcs.xml	(revision 3620ea1a694ce806681b46357d3f5330d3af9b8e)
++++ b/.idea/vcs.xml	(date 1684110196400)
+@@ -1,6 +1,6 @@
+ <?xml version="1.0" encoding="UTF-8"?>
+ <project version="4">
+   <component name="VcsDirectoryMappings">
+-    <mapping directory="$PROJECT_DIR$" vcs="Git" />
++    <mapping directory="" vcs="Git" />
+   </component>
+ </project>
+\ No newline at end of file
+Index: app/src/main/res/layout/activity_monthly_list.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"utf-8\"?>\r\n<androidx.constraintlayout.widget.ConstraintLayout xmlns:android=\"http://schemas.android.com/apk/res/android\"\r\n    xmlns:app=\"http://schemas.android.com/apk/res-auto\"\r\n    xmlns:tools=\"http://schemas.android.com/tools\"\r\n    android:layout_width=\"match_parent\"\r\n    android:layout_height=\"wrap_content\"\r\n    tools:context=\".ui.activity.MonthlyListActivity\">\r\n\r\n    <LinearLayout\r\n        android:layout_width=\"match_parent\"\r\n        android:layout_height=\"match_parent\"\r\n        android:layout_marginStart=\"10dp\"\r\n        android:layout_marginTop=\"30dp\"\r\n        android:layout_marginEnd=\"10dp\"\r\n        android:layout_marginBottom=\"20dp\"\r\n        android:orientation=\"vertical\"\r\n        app:layout_constraintBottom_toBottomOf=\"parent\"\r\n        app:layout_constraintEnd_toEndOf=\"parent\"\r\n        app:layout_constraintStart_toStartOf=\"parent\"\r\n        app:layout_constraintTop_toTopOf=\"parent\">\r\n\r\n        <LinearLayout\r\n            android:layout_width=\"match_parent\"\r\n            android:layout_height=\"wrap_content\"\r\n            android:orientation=\"horizontal\">\r\n\r\n            <Button\r\n                android:id=\"@+id/prevMonth\"\r\n                android:layout_width=\"wrap_content\"\r\n                android:layout_height=\"wrap_content\"\r\n                android:text='prev' />\r\n\r\n            <TextView\r\n                android:id=\"@+id/month\"\r\n                android:layout_width=\"wrap_content\"\r\n                android:layout_height=\"wrap_content\"\r\n                android:text=\"0월\" />\r\n\r\n            <Button\r\n                android:id=\"@+id/nextMoth\"\r\n                android:layout_width=\"wrap_content\"\r\n                android:layout_height=\"wrap_content\"\r\n                android:text='next' />\r\n\r\n            <Space\r\n                android:layout_width=\"wrap_content\"\r\n                android:layout_height=\"match_parent\"\r\n                android:layout_weight=\"1\" />\r\n\r\n            <TextView\r\n                android:id=\"@+id/total\"\r\n                android:layout_width=\"wrap_content\"\r\n                android:layout_height=\"wrap_content\"\r\n                android:text=\"0원\" />\r\n        </LinearLayout>\r\n\r\n        <TableLayout\r\n            android:id=\"@+id/header\"\r\n            android:layout_width=\"match_parent\"\r\n            android:layout_height=\"wrap_content\"\r\n            android:stretchColumns=\"*\">\r\n\r\n            <TableRow\r\n                android:layout_width=\"match_parent\"\r\n                android:layout_height=\"match_parent\">\r\n\r\n                <TextView\r\n                    android:id=\"@+id/textView5\"\r\n                    android:layout_width=\"wrap_content\"\r\n                    android:layout_height=\"wrap_content\"\r\n                    android:gravity=\"center\"\r\n                    android:text=\"NO.\" />\r\n\r\n                <TextView\r\n                    android:id=\"@+id/textView7\"\r\n                    android:layout_width=\"wrap_content\"\r\n                    android:layout_height=\"wrap_content\"\r\n                    android:gravity=\"center\"\r\n                    android:text=\"승차\" />\r\n\r\n                <TextView\r\n                    android:id=\"@+id/textView8\"\r\n                    android:layout_width=\"wrap_content\"\r\n                    android:layout_height=\"wrap_content\"\r\n                    android:gravity=\"center\"\r\n                    android:text=\"하차\" />\r\n\r\n                <TextView\r\n                    android:id=\"@+id/textView6\"\r\n                    android:layout_width=\"wrap_content\"\r\n                    android:layout_height=\"wrap_content\"\r\n                    android:gravity=\"center\"\r\n                    android:text=\"카드\" />\r\n\r\n                <TextView\r\n                    android:id=\"@+id/textView9\"\r\n                    android:layout_width=\"wrap_content\"\r\n                    android:layout_height=\"wrap_content\"\r\n                    android:gravity=\"center\"\r\n                    android:text=\"결제금액\" />\r\n            </TableRow>\r\n\r\n        </TableLayout>\r\n\r\n        <ScrollView\r\n            android:layout_width=\"wrap_content\"\r\n            android:layout_height=\"wrap_content\">\r\n\r\n            <LinearLayout\r\n                android:layout_width=\"match_parent\"\r\n                android:layout_height=\"wrap_content\"\r\n                android:orientation=\"vertical\">\r\n\r\n                <TableLayout\r\n                    android:id=\"@+id/table\"\r\n                    android:layout_width=\"match_parent\"\r\n                    android:layout_height=\"match_parent\"\r\n                    android:stretchColumns=\"*\"/>\r\n            </LinearLayout>\r\n        </ScrollView>\r\n\r\n    </LinearLayout>\r\n\r\n</androidx.constraintlayout.widget.ConstraintLayout>\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/res/layout/activity_monthly_list.xml b/app/src/main/res/layout/activity_monthly_list.xml
+--- a/app/src/main/res/layout/activity_monthly_list.xml	(revision 3620ea1a694ce806681b46357d3f5330d3af9b8e)
++++ b/app/src/main/res/layout/activity_monthly_list.xml	(date 1684466336354)
+@@ -64,61 +64,72 @@
+                 android:layout_width="match_parent"
+                 android:layout_height="match_parent">
+ 
+-                <TextView
+-                    android:id="@+id/textView5"
+-                    android:layout_width="wrap_content"
+-                    android:layout_height="wrap_content"
+-                    android:gravity="center"
+-                    android:text="NO." />
++            </TableRow>
++
++        </TableLayout>
++
++        <ScrollView
++            android:layout_width="wrap_content"
++            android:layout_height="wrap_content">
++
++            <LinearLayout
++                android:layout_width="match_parent"
++                android:layout_height="wrap_content"
++                android:orientation="vertical">
++
++                <TableLayout
++                    android:id="@+id/table"
++                    android:layout_width="match_parent"
++                    android:layout_height="match_parent"
++                    android:stretchColumns="*"/>
++            </LinearLayout>
++        </ScrollView>
++
++    </LinearLayout>
++
++    <TextView
++        android:id="@+id/textView8"
++        android:layout_width="wrap_content"
++        android:layout_height="wrap_content"
++        android:gravity="center"
++        android:text="하차"
++        tools:layout_editor_absoluteX="156dp"
++        tools:layout_editor_absoluteY="99dp" />
+ 
+-                <TextView
+-                    android:id="@+id/textView7"
+-                    android:layout_width="wrap_content"
+-                    android:layout_height="wrap_content"
+-                    android:gravity="center"
+-                    android:text="승차" />
++    <TextView
++        android:id="@+id/textView5"
++        android:layout_width="wrap_content"
++        android:layout_height="wrap_content"
++        android:gravity="center"
++        android:text="NO."
++        tools:layout_editor_absoluteX="12dp"
++        tools:layout_editor_absoluteY="100dp" />
+ 
+-                <TextView
+-                    android:id="@+id/textView8"
+-                    android:layout_width="wrap_content"
+-                    android:layout_height="wrap_content"
+-                    android:gravity="center"
+-                    android:text="하차" />
++    <TextView
++        android:id="@+id/textView7"
++        android:layout_width="wrap_content"
++        android:layout_height="wrap_content"
++        android:gravity="center"
++        android:text="승차"
++        tools:layout_editor_absoluteX="82dp"
++        tools:layout_editor_absoluteY="99dp" />
+ 
+-                <TextView
+-                    android:id="@+id/textView6"
+-                    android:layout_width="wrap_content"
+-                    android:layout_height="wrap_content"
+-                    android:gravity="center"
+-                    android:text="카드" />
++    <TextView
++        android:id="@+id/textView6"
++        android:layout_width="wrap_content"
++        android:layout_height="wrap_content"
++        android:gravity="center"
++        android:text="카드"
++        tools:layout_editor_absoluteX="229dp"
++        tools:layout_editor_absoluteY="99dp" />
+ 
+-                <TextView
+-                    android:id="@+id/textView9"
+-                    android:layout_width="wrap_content"
+-                    android:layout_height="wrap_content"
+-                    android:gravity="center"
+-                    android:text="결제금액" />
+-            </TableRow>
+-
+-        </TableLayout>
+-
+-        <ScrollView
+-            android:layout_width="wrap_content"
+-            android:layout_height="wrap_content">
+-
+-            <LinearLayout
+-                android:layout_width="match_parent"
+-                android:layout_height="wrap_content"
+-                android:orientation="vertical">
+-
+-                <TableLayout
+-                    android:id="@+id/table"
+-                    android:layout_width="match_parent"
+-                    android:layout_height="match_parent"
+-                    android:stretchColumns="*"/>
+-            </LinearLayout>
+-        </ScrollView>
+-
+-    </LinearLayout>
++    <TextView
++        android:id="@+id/textView9"
++        android:layout_width="wrap_content"
++        android:layout_height="wrap_content"
++        android:gravity="center"
++        android:text="결제금액"
++        tools:layout_editor_absoluteX="303dp"
++        tools:layout_editor_absoluteY="99dp" />
+ 
+ </androidx.constraintlayout.widget.ConstraintLayout>
+Index: app/src/main/res/layout/activity_main.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"utf-8\"?>\r\n<androidx.constraintlayout.widget.ConstraintLayout xmlns:android=\"http://schemas.android.com/apk/res/android\"\r\n    xmlns:app=\"http://schemas.android.com/apk/res-auto\"\r\n    xmlns:tools=\"http://schemas.android.com/tools\"\r\n    android:layout_width=\"match_parent\"\r\n    android:layout_height=\"match_parent\"\r\n    tools:context=\".MainActivity\">\r\n\r\n    <LinearLayout\r\n        android:layout_width=\"match_parent\"\r\n        android:layout_height=\"wrap_content\"\r\n        android:layout_marginStart=\"10dp\"\r\n        android:layout_marginTop=\"30dp\"\r\n        android:layout_marginEnd=\"10dp\"\r\n        android:orientation=\"vertical\"\r\n        app:layout_constraintEnd_toEndOf=\"parent\"\r\n        app:layout_constraintStart_toStartOf=\"parent\"\r\n        app:layout_constraintTop_toTopOf=\"parent\">\r\n\r\n        <LinearLayout\r\n            android:layout_width=\"match_parent\"\r\n            android:layout_height=\"match_parent\"\r\n            android:orientation=\"horizontal\">\r\n\r\n            <Space\r\n                android:layout_width=\"wrap_content\"\r\n                android:layout_height=\"wrap_content\"\r\n                android:layout_weight=\"1\" />\r\n\r\n            <ImageButton\r\n                android:id=\"@+id/logoutButton\"\r\n                android:layout_width=\"wrap_content\"\r\n                android:layout_height=\"wrap_content\"\r\n                app:srcCompat=\"@android:drawable/presence_offline\" />\r\n        </LinearLayout>\r\n\r\n        <androidx.constraintlayout.widget.ConstraintLayout\r\n            android:layout_width=\"match_parent\"\r\n            android:layout_height=\"match_parent\"\r\n            android:layout_weight=\"1\">\r\n\r\n            <ImageView\r\n                android:id=\"@+id/imageView4\"\r\n                android:layout_width=\"0dp\"\r\n                android:layout_height=\"150dp\"\r\n                android:layout_marginStart=\"50dp\"\r\n                android:layout_marginEnd=\"50dp\"\r\n                app:layout_constraintEnd_toEndOf=\"parent\"\r\n                app:layout_constraintStart_toStartOf=\"parent\"\r\n                app:srcCompat=\"?android:attr/fastScrollPreviewBackgroundRight\" />\r\n\r\n            <TextView\r\n                android:id=\"@+id/mothlyInfo\"\r\n                android:layout_width=\"wrap_content\"\r\n                android:layout_height=\"wrap_content\"\r\n                android:text=\"TextView\"\r\n                app:layout_constraintBottom_toBottomOf=\"@+id/imageView4\"\r\n                app:layout_constraintEnd_toEndOf=\"@+id/imageView4\"\r\n                app:layout_constraintStart_toStartOf=\"@+id/imageView4\"\r\n                app:layout_constraintTop_toTopOf=\"@+id/imageView4\" />\r\n\r\n        </androidx.constraintlayout.widget.ConstraintLayout>\r\n\r\n        <LinearLayout\r\n            android:layout_width=\"match_parent\"\r\n            android:layout_height=\"wrap_content\"\r\n            android:layout_weight=\"1\"\r\n            android:orientation=\"horizontal\">\r\n\r\n            <Button\r\n                android:id=\"@+id/button1\"\r\n                android:layout_width=\"wrap_content\"\r\n                android:layout_height=\"wrap_content\"\r\n                android:layout_weight=\"1\"\r\n                android:text=\"월별 내역\" />\r\n\r\n            <Button\r\n                android:id=\"@+id/button2\"\r\n                android:layout_width=\"wrap_content\"\r\n                android:layout_height=\"wrap_content\"\r\n                android:layout_weight=\"1\"\r\n                android:text=\"카드 정보\" />\r\n\r\n            <Button\r\n                android:id=\"@+id/button4\"\r\n                android:layout_width=\"wrap_content\"\r\n                android:layout_height=\"wrap_content\"\r\n                android:layout_weight=\"1\"\r\n                android:text=\"button\" />\r\n        </LinearLayout>\r\n\r\n        <Button\r\n            android:id=\"@+id/withdrawalButton\"\r\n            android:layout_width=\"match_parent\"\r\n            android:layout_height=\"wrap_content\"\r\n            android:text=\"회원탈퇴\" />\r\n\r\n    </LinearLayout>\r\n</androidx.constraintlayout.widget.ConstraintLayout>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/res/layout/activity_main.xml b/app/src/main/res/layout/activity_main.xml
+--- a/app/src/main/res/layout/activity_main.xml	(revision 3620ea1a694ce806681b46357d3f5330d3af9b8e)
++++ b/app/src/main/res/layout/activity_main.xml	(date 1684458976249)
+@@ -45,9 +45,10 @@
+                 android:layout_height="150dp"
+                 android:layout_marginStart="50dp"
+                 android:layout_marginEnd="50dp"
++                android:background="@drawable/round"
+                 app:layout_constraintEnd_toEndOf="parent"
+                 app:layout_constraintStart_toStartOf="parent"
+-                app:srcCompat="?android:attr/fastScrollPreviewBackgroundRight" />
++            />
+ 
+             <TextView
+                 android:id="@+id/mothlyInfo"
+@@ -86,7 +87,7 @@
+                 android:layout_width="wrap_content"
+                 android:layout_height="wrap_content"
+                 android:layout_weight="1"
+-                android:text="button" />
++                android:text="카드등록" />
+         </LinearLayout>
+ 
+         <Button
+Index: .idea/compiler.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<project version=\"4\">\r\n  <component name=\"CompilerConfiguration\">\r\n    <bytecodeTargetLevel target=\"11\" />\r\n  </component>\r\n</project>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/compiler.xml b/.idea/compiler.xml
+--- a/.idea/compiler.xml	(revision 3620ea1a694ce806681b46357d3f5330d3af9b8e)
++++ b/.idea/compiler.xml	(date 1684110673164)
+@@ -1,6 +1,6 @@
+ <?xml version="1.0" encoding="UTF-8"?>
+ <project version="4">
+   <component name="CompilerConfiguration">
+-    <bytecodeTargetLevel target="11" />
++    <bytecodeTargetLevel target="17" />
+   </component>
+ </project>
+\ No newline at end of file
+Index: app/src/main/res/layout/activity_signup.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"utf-8\"?>\r\n<androidx.constraintlayout.widget.ConstraintLayout xmlns:android=\"http://schemas.android.com/apk/res/android\"\r\n    xmlns:app=\"http://schemas.android.com/apk/res-auto\"\r\n    xmlns:tools=\"http://schemas.android.com/tools\"\r\n    android:layout_width=\"match_parent\"\r\n    android:layout_height=\"match_parent\"\r\n    tools:context=\".ui.activity.SignupActivity\">\r\n\r\n    <LinearLayout\r\n        android:layout_width=\"match_parent\"\r\n        android:layout_height=\"wrap_content\"\r\n        android:layout_marginStart=\"10dp\"\r\n        android:layout_marginTop=\"30dp\"\r\n        android:layout_marginEnd=\"10dp\"\r\n        android:orientation=\"vertical\"\r\n        app:layout_constraintEnd_toEndOf=\"parent\"\r\n        app:layout_constraintStart_toStartOf=\"parent\"\r\n        app:layout_constraintTop_toTopOf=\"parent\">\r\n\r\n        <LinearLayout\r\n            android:layout_width=\"match_parent\"\r\n            android:layout_height=\"wrap_content\"\r\n            android:orientation=\"horizontal\">\r\n\r\n            <TextView\r\n                android:id=\"@+id/SignUpText\"\r\n                android:layout_width=\"wrap_content\"\r\n                android:layout_height=\"wrap_content\"\r\n                android:layout_weight=\"1\"\r\n                android:text=\"회원가입\"\r\n                android:textAlignment=\"center\"\r\n                android:textSize=\"48sp\"\r\n                android:textStyle=\"bold\" />\r\n\r\n        </LinearLayout>\r\n\r\n        <EditText\r\n            android:id=\"@+id/name\"\r\n            android:layout_width=\"match_parent\"\r\n            android:layout_height=\"wrap_content\"\r\n            android:ems=\"10\"\r\n            android:inputType=\"textPersonName\"\r\n            android:text=\"Name\" />\r\n\r\n        <EditText\r\n            android:id=\"@+id/phone\"\r\n            android:layout_width=\"match_parent\"\r\n            android:layout_height=\"wrap_content\"\r\n            android:ems=\"10\"\r\n            android:inputType=\"numberDecimal\" />\r\n\r\n        <LinearLayout\r\n            android:layout_width=\"match_parent\"\r\n            android:layout_height=\"match_parent\"\r\n            android:orientation=\"horizontal\">\r\n\r\n            <EditText\r\n                android:id=\"@+id/verifyNumber\"\r\n                android:layout_width=\"wrap_content\"\r\n                android:layout_height=\"wrap_content\"\r\n                android:ems=\"10\"\r\n                android:enabled=\"false\"\r\n                android:inputType=\"numberDecimal\" />\r\n\r\n            <Button\r\n                android:id=\"@+id/sendButton\"\r\n                android:layout_width=\"wrap_content\"\r\n                android:layout_height=\"wrap_content\"\r\n                android:text=\"인증번호 전송\" />\r\n        </LinearLayout>\r\n\r\n        <Button\r\n            android:id=\"@+id/verifyButton\"\r\n            android:layout_width=\"wrap_content\"\r\n            android:layout_height=\"wrap_content\"\r\n            android:layout_weight=\"3\"\r\n            android:enabled=\"false\"\r\n            android:text=\"본인인증\" />\r\n\r\n        <EditText\r\n            android:id=\"@+id/EmailAddress\"\r\n            android:layout_width=\"match_parent\"\r\n            android:layout_height=\"wrap_content\"\r\n            android:ems=\"10\"\r\n            android:enabled=\"false\"\r\n            android:inputType=\"textEmailAddress\"\r\n            tools:text=\"@string/prompt_email\" />\r\n\r\n        <EditText\r\n            android:id=\"@+id/Password\"\r\n            android:layout_width=\"match_parent\"\r\n            android:layout_height=\"wrap_content\"\r\n            android:ems=\"10\"\r\n            android:enabled=\"false\"\r\n            android:inputType=\"textPassword\"\r\n            tools:text=\"@string/prompt_password\" />\r\n\r\n        <EditText\r\n            android:id=\"@+id/Password2\"\r\n            android:layout_width=\"match_parent\"\r\n            android:layout_height=\"wrap_content\"\r\n            android:ems=\"10\"\r\n            android:enabled=\"false\"\r\n            android:inputType=\"textPassword\"\r\n            tools:text=\"@string/prompt_password\" />\r\n\r\n        <LinearLayout\r\n            android:layout_width=\"match_parent\"\r\n            android:layout_height=\"match_parent\"\r\n            android:orientation=\"horizontal\">\r\n\r\n            <Space\r\n                android:layout_width=\"wrap_content\"\r\n                android:layout_height=\"wrap_content\"\r\n                android:layout_weight=\"1\" />\r\n\r\n            <Button\r\n                android:id=\"@+id/signIn\"\r\n                android:layout_width=\"wrap_content\"\r\n                android:layout_height=\"wrap_content\"\r\n                android:enabled=\"false\"\r\n                android:lines=\"1\"\r\n                android:text=\"회원가입\" />\r\n        </LinearLayout>\r\n\r\n    </LinearLayout>\r\n\r\n</androidx.constraintlayout.widget.ConstraintLayout>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/res/layout/activity_signup.xml b/app/src/main/res/layout/activity_signup.xml
+--- a/app/src/main/res/layout/activity_signup.xml	(revision 3620ea1a694ce806681b46357d3f5330d3af9b8e)
++++ b/app/src/main/res/layout/activity_signup.xml	(date 1684340696759)
+@@ -39,15 +39,41 @@
+             android:layout_width="match_parent"
+             android:layout_height="wrap_content"
+             android:ems="10"
+-            android:inputType="textPersonName"
+-            android:text="Name" />
++            android:hint="이름"
++            android:inputType="textPersonName" />
++
++        <LinearLayout
++            android:layout_width="match_parent"
++            android:layout_height="match_parent"
++            android:orientation="horizontal">
++
++            <EditText
++                android:id="@+id/birth"
++                android:layout_width="wrap_content"
++                android:layout_height="wrap_content"
++                android:layout_weight="5"
++                android:ems="10"
++                android:enabled="false"
++                android:hint="생년월일"
++                android:inputType="textPersonName" />
++
++            <ImageButton
++                android:id="@+id/inputDateButton"
++                android:layout_width="wrap_content"
++                android:layout_height="wrap_content"
++                android:layout_weight="1"
++                app:srcCompat="@android:drawable/ic_menu_my_calendar" />
++
++        </LinearLayout>
+ 
+         <EditText
+-            android:id="@+id/phone"
++            android:id="@+id/EmailAddress"
+             android:layout_width="match_parent"
+             android:layout_height="wrap_content"
+             android:ems="10"
+-            android:inputType="numberDecimal" />
++            android:hint="이메일"
++            android:inputType="textEmailAddress"
++            tools:text="@string/prompt_email" />
+ 
+         <LinearLayout
+             android:layout_width="match_parent"
+@@ -60,6 +86,7 @@
+                 android:layout_height="wrap_content"
+                 android:ems="10"
+                 android:enabled="false"
++                android:hint="인증번호"
+                 android:inputType="numberDecimal" />
+ 
+             <Button
+@@ -78,13 +105,14 @@
+             android:text="본인인증" />
+ 
+         <EditText
+-            android:id="@+id/EmailAddress"
++            android:id="@+id/id"
+             android:layout_width="match_parent"
+             android:layout_height="wrap_content"
+             android:ems="10"
+             android:enabled="false"
++            android:hint="ID"
+             android:inputType="textEmailAddress"
+-            tools:text="@string/prompt_email" />
++            android:visibility="invisible" />
+ 
+         <EditText
+             android:id="@+id/Password"
+@@ -92,7 +120,9 @@
+             android:layout_height="wrap_content"
+             android:ems="10"
+             android:enabled="false"
++            android:hint="비밀번호"
+             android:inputType="textPassword"
++            android:visibility="invisible"
+             tools:text="@string/prompt_password" />
+ 
+         <EditText
+@@ -101,7 +131,9 @@
+             android:layout_height="wrap_content"
+             android:ems="10"
+             android:enabled="false"
++            android:hint="비밀번호 확인"
+             android:inputType="textPassword"
++            android:visibility="invisible"
+             tools:text="@string/prompt_password" />
+ 
+         <LinearLayout
+@@ -120,7 +152,8 @@
+                 android:layout_height="wrap_content"
+                 android:enabled="false"
+                 android:lines="1"
+-                android:text="회원가입" />
++                android:text="회원가입"
++                android:visibility="invisible" />
+         </LinearLayout>
+ 
+     </LinearLayout>
+Index: app/src/main/java/com/example/hifive/data/model/RegisterRequest.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.example.hifive.data.model\r\n\r\ndata class RegisterRequest(\r\n    val id: String,\r\n    val pwd: String,\r\n    val name: String,\r\n    val phone: String\r\n)\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/example/hifive/data/model/RegisterRequest.kt b/app/src/main/java/com/example/hifive/data/model/RegisterRequest.kt
+--- a/app/src/main/java/com/example/hifive/data/model/RegisterRequest.kt	(revision 3620ea1a694ce806681b46357d3f5330d3af9b8e)
++++ b/app/src/main/java/com/example/hifive/data/model/RegisterRequest.kt	(date 1684475011659)
+@@ -3,6 +3,9 @@
+ data class RegisterRequest(
+     val id: String,
+     val pwd: String,
++    val email:String,
+     val name: String,
+-    val phone: String
++    val birth:String,
++    val certification:Boolean
++
+ )
+Index: app/src/main/java/com/example/hifive/data/model/LoginResponse.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.example.hifive.data.model\r\n\r\ndata class LoginResponse(\r\n    val success: Boolean,\r\n    val message: String\r\n)\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/example/hifive/data/model/LoginResponse.kt b/app/src/main/java/com/example/hifive/data/model/LoginResponse.kt
+--- a/app/src/main/java/com/example/hifive/data/model/LoginResponse.kt	(revision 3620ea1a694ce806681b46357d3f5330d3af9b8e)
++++ b/app/src/main/java/com/example/hifive/data/model/LoginResponse.kt	(date 1684301770275)
+@@ -2,5 +2,6 @@
+ 
+ data class LoginResponse(
+     val success: Boolean,
+-    val message: String
++    val message: String,
++    val name: String,
+ )

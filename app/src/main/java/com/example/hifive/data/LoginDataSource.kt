@@ -1,29 +1,41 @@
 package com.example.hifive.data
 
+import android.util.Log
 import com.example.hifive.data.model.LoggedInUser
 import com.example.hifive.data.model.LoginRequest
-import com.example.hifive.ui.activity.LoginActivity
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import java.io.IOException
+import java.security.MessageDigest
 
 /**
  * Class that handles authentication w/ login credentials and retrieves user information.
  */
 class LoginDataSource {
 
-    fun login(username: String, password: String): Result<LoggedInUser> {
+    suspend fun login(username: String, password: String): Result<LoggedInUser> {
         try {
-            // TODO: handle loggedInUser authentication
-            val fakeUser = LoggedInUser(java.util.UUID.randomUUID().toString(), "Jane Doe")
-            //val response = RetrofitClient.login(LoginActivity(), LoginRequest(username, password))
-            //val user = LoggedInUser("${response.id}","${response.id}")
-            // error
-            return Result.Success(fakeUser)
+            // TODO: 오류 수정
+            //error null
+            val response = RetrofitClient.login(LoginRequest(username, encrypt(password)))
+            if(response !== null) {
+                if (response?.success==true) {
+                    val user = LoggedInUser("${username}", "${response.name}","${response.email}")
+                    return Result.Success(user)
+                } else {
+                    return Result.Error(Exception("로그인 오류"))
+                }
+            }else{
+                return Result.Error(Exception("로그인 오류"))
+            }
         } catch (e: Throwable) {
             return Result.Error(IOException("Error logging in", e))
         }
+    }
+
+    //비밀번호 암호화
+    private fun encrypt(input: String): String {
+        val bytes = MessageDigest.getInstance("MD5").digest(input.toByteArray(Charsets.UTF_8))
+        return bytes.joinToString("") { "%02x".format(it) }
     }
 
     fun logout() {

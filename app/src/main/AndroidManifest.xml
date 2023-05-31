@@ -17,6 +17,9 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
+            android:name=".ui.activity.CardListActivity"
+            android:exported="false" />
+        <activity
             android:name=".ui.activity.findIDPWActivity"
             android:exported="false" />
         <activity
@@ -31,7 +34,8 @@
         <activity
             android:name=".ui.activity.LoginActivity"
             android:exported="false" />
-        <activity android:name=".ui.activity.CardRegistActivity"
+        <activity
+            android:name=".ui.activity.CardRegistActivity"
             android:exported="false" />
         <activity
             android:name=".ui.activity.SplashActivity"

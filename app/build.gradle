@@ -6,6 +6,7 @@ plugins {
 android {
     namespace 'com.example.hifive'
     compileSdk 33
+    compileSdkVersion "android-UpsideDownCake"
 
     defaultConfig {
         applicationId "com.example.hifive"
@@ -62,6 +63,8 @@ dependencies {
 
     // Airbnb Lottie Animation Module
     implementation "com.airbnb.android:lottie:$lottie_version"
+    implementation 'androidx.core:core-ktx:+'
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.2.0'
 
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'

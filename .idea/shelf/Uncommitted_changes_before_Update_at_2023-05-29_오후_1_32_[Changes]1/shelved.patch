@@ -1,0 +1,47 @@
+Index: app/src/main/java/com/example/hifive/data/model/SpenLIstResponse.kt
+===================================================================
+diff --git a/app/src/main/java/com/example/hifive/data/model/SpenLIstResponse.kt b/app/src/main/java/com/example/hifive/data/model/SpenLIstResponse.kt
+deleted file mode 100644
+--- a/app/src/main/java/com/example/hifive/data/model/SpenLIstResponse.kt	
++++ /dev/null	
+@@ -1,9 +0,0 @@
+-package com.example.hifive.data.model
+-
+-data class SpenLIstResponse(
+-    val no : Int,
+-    val date : String,
+-    val riding : String,
+-    val stopover : String,
+-    val money: Int
+-)
+Index: app/src/main/java/com/example/hifive/data/model/AuthVerifyRequest.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/example/hifive/data/model/AuthVerifyRequest.kt b/app/src/main/java/com/example/hifive/data/model/AuthVerifyRequest.kt
+new file mode 100644
+--- /dev/null	
++++ b/app/src/main/java/com/example/hifive/data/model/AuthVerifyRequest.kt	
+@@ -0,0 +1,6 @@
++package com.example.hifive.data.model
++
++data class AuthVerifyRequest(
++    val email: String,
++    val auth_number : String
++)
+Index: app/src/main/java/com/example/hifive/data/model/AuthRequest.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/example/hifive/data/model/AuthRequest.kt b/app/src/main/java/com/example/hifive/data/model/AuthRequest.kt
+new file mode 100644
+--- /dev/null	
++++ b/app/src/main/java/com/example/hifive/data/model/AuthRequest.kt	
+@@ -0,0 +1,5 @@
++package com.example.hifive.data.model
++
++data class AuthRequest(
++    val email: String
++)

@@ -1,5 +1,6 @@
 package com.example.hifive.ui.activity
 
+import android.app.Activity
 import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.content.Context
@@ -68,8 +69,6 @@ class SignupActivity : AppCompatActivity() {
             }
         }
 
-        // todo server test
-        // 인증번호 검증 버튼(본인인증)
         binding.verifyButton.setOnClickListener {
             //인증번호 검증 action
             val email = "${binding.EmailAddress.text}"

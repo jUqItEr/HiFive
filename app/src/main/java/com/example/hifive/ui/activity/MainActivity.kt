@@ -80,13 +80,15 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
         }
 
         // 카드 정보
-//        button2.setOnClickListener{
-//
-//        }
+        button2.setOnClickListener{
+            val intent: Intent = Intent(this@MainActivity, CardListActivity::class.java)
+            intent.putExtra("user", bundle)
+            startActivity(intent)
+        }
 
         //카드 등록
         binding.button4.setOnClickListener{
-            val intent=Intent(this@MainActivity,CardRegistActivity::class.java)
+            val intent = Intent(this@MainActivity,CardRegistActivity::class.java)
             intent.putExtra("user",bundle)
             startActivity(intent)
         }
@@ -126,13 +128,15 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
                 // Respond to negative button press
             }
             .setPositiveButton("회원 탈퇴") { dialog, which ->
-                // password 비암호화 전송
                 bundle?.getString("id")
-                    ?.let { RetrofitClient.deleteUser(this, it, passwordEditText.text.toString()) }
-                //todo password 암호화 전송
-                //RetrofitClient.deleteUser(this, id, encrypt(passwordEditText.text.toString()))
+                RetrofitClient.deleteUser(this, id, encrypt(passwordEditText.text.toString()))
             }
             .show()
+    }
+
+    private fun encrypt(input: String): String {
+        val bytes = MessageDigest.getInstance("MD5").digest(input.toByteArray(Charsets.UTF_8))
+        return bytes.joinToString("") { "%02x".format(it) }
     }
 
     companion object {

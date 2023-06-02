@@ -10,6 +10,7 @@ import com.example.hifive.ui.activity.CardRegistActivity
 import com.example.hifive.ui.activity.LoginActivity
 import com.example.hifive.ui.activity.SignupActivity
 import kotlinx.coroutines.*
+import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
@@ -307,6 +308,63 @@ object RetrofitClient {
                     Toast.makeText(context, e.message, Toast.LENGTH_SHORT).show()
                 }
                 e.message?.let { Log.d(message, it) }
+            }
+        }
+    }
+
+    suspend fun getCardList(id: String): CardListResponse? {
+        var result : CardListResponse? = null
+        try {
+            val response = ApiService.cardList(id)
+            if (response.isSuccessful) {
+                result = response.body()
+            }
+        } catch (e: Exception){
+            val message = "요청 실패"
+            e.message?.let { Log.d(message, it) }
+        } finally {
+            return result
+        }
+    }
+
+    suspend fun setRepresentCard(context: Activity, id: String, card_num: String): Boolean {
+        var result: CommonResponse? = null
+        try {
+            val response = ApiService.setCard(setRepresentRequest(id, card_num))
+            if (response.isSuccessful) {
+                result = response.body()
+            }
+        } catch (e: Exception) {
+            val message = "요청 실패"
+            e.message?.let { Log.d(message, it) }
+        } finally {
+            if (result != null) {
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(context, "${result.message}", Toast.LENGTH_SHORT)
+                }
+                return result.success
+            } else{
+                return false
+            }
+        }
+    }
+
+    suspend fun deleteCard(context: Activity, id: String, card_num: String): Boolean{
+        var result: CommonResponse? = null
+        try {
+            val response = ApiService.delete_card(CardDeleteRequest(id, card_num))
+            if (response.isSuccessful) {
+                result = response.body()
+            }
+        } catch (e: Exception) {
+            val message = "요청 실패"
+            e.message?.let { Log.d(message, it) }
+        } finally {
+            if (result != null) {
+                Toast.makeText(context, "${result.message}", Toast.LENGTH_SHORT)
+                return result.success
+            } else{
+                return false
             }
         }
     }

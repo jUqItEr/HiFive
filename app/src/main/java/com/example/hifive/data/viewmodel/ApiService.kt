@@ -23,14 +23,6 @@ interface ApiService {
         @Body request: AuthRequest
     ): Response<CommonResponse>
 
-    // 비밀번호 수정 인증번호 요청, 수정요망
-//    @POST("/pw/auth")
-//    suspend fun pwAuth(
-//        @Body id: String,
-//        @Body name: String,
-//        @Body phone : String
-//    ): Response<Boolean>
-
     // 검증 요청
     @POST("/users/auth-check")
     suspend fun auth_verify(
@@ -71,5 +63,18 @@ interface ApiService {
         @Query("month") month: String
     ): Response<PayListResponse>
 
+    @GET("/users/card-list")
+    suspend fun cardList(
+        @Query("id") id: String
+    ): Response<CardListResponse>
 
+    @PUT("/users/change-card")
+    suspend fun setCard(
+        @Body request: setRepresentRequest
+    ): Response<CommonResponse>
+
+    @HTTP(method = "DELETE", path = "/users/card-delete", hasBody = true)
+    suspend fun delete_card(
+        @Body request: CardDeleteRequest
+    ): Response<CommonResponse>
 }

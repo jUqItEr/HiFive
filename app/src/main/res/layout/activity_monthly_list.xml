@@ -87,13 +87,15 @@
         </TableLayout>
 
         <ScrollView
+            android:id="@+id/scrollView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
-                <TableLayout
-                    android:id="@+id/table"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:stretchColumns="*" />
+
+            <TableLayout
+                android:id="@+id/table"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:stretchColumns="*" />
         </ScrollView>
 
     </LinearLayout>

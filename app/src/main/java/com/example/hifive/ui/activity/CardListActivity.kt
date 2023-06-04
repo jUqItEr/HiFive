@@ -1,6 +1,7 @@
 package com.example.hifive.ui.activity
 
 import android.app.Activity
+import android.graphics.BitmapFactory
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -18,6 +19,9 @@ import com.example.hifive.ui.dialog.CardDialog
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.io.IOException
+import java.net.URL
 
 class CardListActivity : AppCompatActivity() {
     private var bundle: Bundle? = null
@@ -79,13 +83,23 @@ class CardListActivity : AppCompatActivity() {
         // 이미지뷰 카드이미지
         val imageView = ImageView(this)
         imageView.layoutParams = LinearLayout.LayoutParams(
-            LinearLayout.LayoutParams.WRAP_CONTENT,
-            LinearLayout.LayoutParams.WRAP_CONTENT,
+            300,
+            100,
             1f
         )
         if (data.url != null) {
-            val uri = Uri.parse(data.url)
-            imageView.setImageURI(uri)
+            CoroutineScope(Dispatchers.IO).launch {
+                try {
+                    val inputStream = URL(data.url).openStream()
+                    val bitmap = BitmapFactory.decodeStream(inputStream)
+
+                    withContext(Dispatchers.Main) {
+                        imageView.setImageBitmap(bitmap)
+                    }
+                } catch (e: IOException) {
+                    e.printStackTrace()
+                }
+            }
         } else {
             imageView.setImageResource(android.R.drawable.ic_menu_gallery)
         }
@@ -93,7 +107,7 @@ class CardListActivity : AppCompatActivity() {
         // 텍스트뷰 카드이름
         val textView = TextView(this)
         textView.layoutParams = LinearLayout.LayoutParams(
-            LinearLayout.LayoutParams.WRAP_CONTENT,
+            500,
             LinearLayout.LayoutParams.WRAP_CONTENT,
             3f
         )

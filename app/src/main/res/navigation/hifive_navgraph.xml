@@ -33,4 +33,14 @@
         android:name="com.example.hifive.ui.activity.MonthlyListActivity"
         android:label="activity_monthly_list"
         tools:layout="@layout/activity_monthly_list" />
+    <activity
+        android:id="@+id/cardListActivity"
+        android:name="com.example.hifive.ui.activity.CardListActivity"
+        android:label="activity_card_list"
+        tools:layout="@layout/activity_card_list" />
+    <activity
+        android:id="@+id/cardRegistActivity"
+        android:name="com.example.hifive.ui.activity.CardRegistActivity"
+        android:label="activity_card_regist"
+        tools:layout="@layout/activity_card_regist" />
 </navigation>

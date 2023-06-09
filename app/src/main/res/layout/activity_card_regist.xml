@@ -96,7 +96,7 @@
             android:ems="10"
             android:enabled="false"
             android:hint="카드번호 ( '-' 제외)"
-            android:inputType="textPassword"
+            android:inputType="numberPassword"
             android:visibility="invisible" />
 
         <EditText
@@ -105,8 +105,8 @@
             android:layout_height="wrap_content"
             android:ems="10"
             android:enabled="false"
-            android:hint="카드유효기간 ( ex)20230523 ) "
-            android:inputType="textPassword"
+            android:hint="카드유효기간 ( ex)YYYYMM ) "
+            android:inputType="numberPassword"
             android:visibility="invisible"
             tools:text="@string/prompt_password" />
 
@@ -117,19 +117,9 @@
             android:ems="10"
             android:enabled="false"
             android:hint="카드 비밀번호 앞 2자리"
-            android:inputType="textPassword"
+            android:inputType="numberPassword"
             android:visibility="invisible"
             tools:text="@string/prompt_password" />
-
-        <EditText
-            android:id="@+id/cardName"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:ems="10"
-            android:enabled="false"
-            android:hint="카드 닉네임(이름)"
-            android:visibility="invisible"
-            />
 
         <LinearLayout
             android:layout_width="match_parent"

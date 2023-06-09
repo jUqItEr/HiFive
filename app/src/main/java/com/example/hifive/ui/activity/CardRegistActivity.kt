@@ -214,13 +214,6 @@ class CardRegistActivity : AppCompatActivity() {
             showDialog(this@CardRegistActivity,"카드 비밀번호 앞 두자리를 입력해주세요.")
             return false
         }
-        if(card_name.isNotBlank()){
-            valid=true
-        }else{
-            showDialog(this@CardRegistActivity,"카드 이름을 입력해주세요.")
-            return false
-        }
-
 
         return valid
     }

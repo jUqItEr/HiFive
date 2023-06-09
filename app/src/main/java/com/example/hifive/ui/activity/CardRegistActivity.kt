@@ -6,9 +6,11 @@ import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.text.Editable
 import android.util.Log
 import android.widget.EditText
 import android.widget.Toast
+import androidx.core.text.set
 import androidx.core.view.isVisible
 import com.example.hifive.data.RetrofitClient
 import com.example.hifive.data.model.CardRegistRequest
@@ -31,6 +33,11 @@ class CardRegistActivity : AppCompatActivity() {
         setContentView(binding.root)
         bundle = intent.extras?.getBundle("user")
 
+        binding.userId.setText("${bundle?.getString("id")}")
+        binding.userId.isEnabled = false
+        binding.EmailAddress.setText("${bundle?.getString("email")}")
+        binding.EmailAddress.isEnabled = false
+
         // 날짜 입력 버튼
         binding.inputDateButton.setOnClickListener(){
             showDatePickerDialog(this@CardRegistActivity, binding.birth)
@@ -38,7 +45,6 @@ class CardRegistActivity : AppCompatActivity() {
 
         // 인증번호 전송 버튼
         binding.sendButton.setOnClickListener {
-            //todo - 서버 테스트
             val id = binding.userId.text.toString()
             val email = binding.EmailAddress.text.toString()
             val birthday = binding.birth.text.toString()
@@ -46,36 +52,24 @@ class CardRegistActivity : AppCompatActivity() {
 
             if(sendValid(id, birthday, email)) {
                 CoroutineScope(Dispatchers.IO).launch {
-                    if (id != bundle?.getString("id")) {
+                    val result = RetrofitClient.requestAuth(email)
+                    Log.d("result", "${result}")
+                    var success = false
+                    if (result != null) {
                         launch(Dispatchers.Main) {
-                            showDialog(this@CardRegistActivity, "아이디 틀림")
+                            showDialog(this@CardRegistActivity, "${result.message}")
                         }
-                    }else if(email!=bundle?.getString("email")){
+                        success = result.success
+                    } else {
                         launch(Dispatchers.Main) {
-                            showDialog(this@CardRegistActivity, "이메일 틀림")
+                            showDialog(this@CardRegistActivity, "요청 실패(NULL)")
                         }
                     }
-                    else{
-                        val result = RetrofitClient.requestAuth(email)
-                        Log.d("result", "${result}")
-                        var success = false
-                        if (result != null) {
-                            launch(Dispatchers.Main) {
-                                showDialog(this@CardRegistActivity, "${result.message}")
-                            }
-                            success = result.success
-                        } else {
-                            launch(Dispatchers.Main) {
-                                showDialog(this@CardRegistActivity, "요청 실패(NULL)")
-                            }
-                        }
-
-                        if (success) {
-                            launch(Dispatchers.Main) {
-                                binding.sendButton.text = "재전송"
-                                binding.verifyButton.isEnabled = true
-                                binding.verifyNumber.isEnabled = true
-                            }
+                    if (success) {
+                        launch(Dispatchers.Main) {
+                            binding.sendButton.text = "재전송"
+                            binding.verifyButton.isEnabled = true
+                            binding.verifyNumber.isEnabled = true
                         }
                     }
                 }
@@ -105,12 +99,10 @@ class CardRegistActivity : AppCompatActivity() {
                         binding.cardNumber.isEnabled = true
                         binding.expiryValue.isEnabled = true
                         binding.pwd2digitValue.isEnabled = true
-                        binding.cardName.isEnabled = true
                         binding.cardRegistBtn.isEnabled=true
                         binding.cardNumber.isVisible = true
                         binding.expiryValue.isVisible = true
                         binding.pwd2digitValue.isVisible = true
-                        binding.cardName.isVisible = true
                         binding.cardRegistBtn.isVisible=true
 
                         binding.inputDateButton.isEnabled = false
@@ -140,7 +132,7 @@ class CardRegistActivity : AppCompatActivity() {
             Log.d("생년월일 체크","$birth")
             val pwd_2digit=binding.pwd2digitValue.text.toString()
             val id = binding.userId.text.toString()
-            val card_name=binding.cardName.text.toString()
+            val card_name=""
 
             if(isValid(id, birth, card_number,expiry,pwd_2digit,card_name)) {
                 CoroutineScope(Dispatchers.IO).launch {
@@ -222,13 +214,6 @@ class CardRegistActivity : AppCompatActivity() {
             showDialog(this@CardRegistActivity,"카드 비밀번호 앞 두자리를 입력해주세요.")
             return false
         }
-        if(card_name.isNotBlank()){
-            valid=true
-        }else{
-            showDialog(this@CardRegistActivity,"카드 이름을 입력해주세요.")
-            return false
-        }
-
 
         return valid
     }
